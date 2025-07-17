@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {# 首先渲染原始内容 #}
+  {{ super() }}
+  
+  {# 在内容下方添加导航 #}
+  <div class="page-nav-below">
+    <hr style="margin: 2rem 0;">
+    <div class="nav-links">
+      {% if page.previous_page %}
+        <a href="{{ page.previous_page.url | url }}" class="prev-page" style="float: left;">
+          ← {{ page.previous_page.title }}
+        </a>
+      {% endif %}
+      {% if page.next_page %}
+        <a href="{{ page.next_page.url | url }}" class="next-page" style="float: right;">
+          {{ page.next_page.title }} →
+        </a>
+      {% endif %}
+      <div style="clear: both;"></div>
+    </div>
+  </div>
+{% endblock %}
