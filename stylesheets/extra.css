@@ -126,6 +126,35 @@ a.card-link:hover {
   align-items: center;
 }
 
+
+/* 为有子目录项的链接添加箭头图标 */
+.md-nav__item.has-children > .md-nav__link {
+  position: relative;
+  padding-right: 20px; /* 为图标留出空间 */
+}
+
+.md-nav__item.has-children > .md-nav__link::after {
+  content: "⟩"; /* 使用尖括号 */
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1em;
+  font-weight: 900;
+  transition: transform 0.2s ease; /* 添加旋转动画 */
+}
+
+/* 展开时旋转 90 度 */
+.md-nav__item.has-children.is-expanded > .md-nav__link::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/*设置一级导航字体的颜色以增加和二级导航的区分度*/
+.md-nav--primary .md-nav__item--section > .md-nav__link {
+    color: #000;
+    font-size: 1.1em; 
+}
+
 /* Override the responsive design part of the footer. */
 @media screen and (max-width: 44.984375em) {
   .md-footer__link--prev .md-footer__title {
