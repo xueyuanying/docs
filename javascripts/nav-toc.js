@@ -41,4 +41,18 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("tocLink not found");
         }
     }
+
+
+
+    const header = document.querySelector(".md-header__inner"); // 找到导航容器
+    if (header) {
+        const a1 = document.createElement("a");
+        a1.href = "https://www.tronlink.org/";
+        a1.target = "_blank";
+        a1.className = "md-header__link";
+        a1.style="font-size:14px";
+        a1.textContent = "Homepage";
+
+        header.appendChild(a1);
+    }
 });

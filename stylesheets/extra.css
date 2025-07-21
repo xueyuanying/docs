@@ -82,6 +82,50 @@ a.card-link:hover {
   max-width: 300px;
 }
 
+/* Tooltip 样式 */
+.tooltip {
+  position: relative;
+  border-bottom: 1px dotted #666;
+  cursor: pointer;
+}
+
+/* Tooltip 内容 */
+.tooltip::after {
+  content: attr(data-tooltip); 
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+  width: 300px;
+  max-width: 500px;
+  white-space: wrap;
+  word-break: break-all;
+}
+
+/* 悬停时显示 */
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.nav-links{
+  display: flex;
+}
+
+/* add flex alignment */
+.md-footer__link {
+  align-items: center;
+}
+
 /* Override the responsive design part of the footer. */
 @media screen and (max-width: 44.984375em) {
   .md-footer__link--prev .md-footer__title {
