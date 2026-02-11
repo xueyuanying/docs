@@ -20,25 +20,25 @@
 </code></pre> <h3 id=website-disconnect-message>Website Disconnect Message</h3> <p>Message identifier: <code>disconnect</code></p> <h4 id=overview_3>Overview</h4> <p>If the provider disconnects from all chains, it must emit a <code>disconnect</code> event and return a <code>ProviderRpcError</code> object.</p> <h4 id=technical-specification_3>Technical Specification</h4> <h5 id=code-example_3>Code Example</h5> <pre><code class=language-typescript>tron.on('disconnect', (providerRpcError: ProviderRpcError) =&gt; {
   console.error(connectInfo); // { code: 4900, message: 'Disconnected' }
 })
-</code></pre> <hr> <h3 id=legacy-compatibility-messages>Legacy Compatibility Messages</h3> <p>The following four messages are retained for compatibility with version 3.x and will be deprecated in future versions:</p> <ol> <li>User rejected connection → <code>rejectWeb</code> </li> <li>User disconnected the website → <code>disconnectWeb</code> </li> <li>User confirmed connection → <code>acceptWeb</code> </li> <li>User proactively connected the website → <code>connectWeb</code> </li> </ol> <h3 id=user-rejected-connection-message>User Rejected Connection Message</h3> <p>Message identifier: <code>rejectWeb</code></p> <p>Generated when:</p> <ol> <li>A DApp requests connection and the user rejects it in the popup.</li> </ol> <p><img src=/images/plugin-wallet_rejectWeb.png width=50%></p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
+</code></pre> <hr> <h3 id=legacy-compatibility-messages>Legacy Compatibility Messages</h3> <p>The following four messages are retained for compatibility with version 3.x and will be deprecated in future versions:</p> <ol> <li>User rejected connection → <code>rejectWeb</code> </li> <li>User disconnected the website → <code>disconnectWeb</code> </li> <li>User confirmed connection → <code>acceptWeb</code> </li> <li>User proactively connected the website → <code>connectWeb</code> </li> </ol> <h3 id=user-rejected-connection-message>User Rejected Connection Message</h3> <p>Message identifier: <code>rejectWeb</code></p> <p>Generated when:</p> <ol> <li>A DApp requests connection and the user rejects it in the popup.</li> </ol> <p><img alt=image src=/images/plugin-wallet_rejectWeb.png>{ width="350" }</p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
   if (e.data.message &amp;&amp; e.data.message.action == &quot;rejectWeb&quot;) {
       // handler logic
       console.log('got rejectWeb event', e.data)
   }
 })
-</code></pre> <h3 id=user-disconnected-website-message>User Disconnected Website Message</h3> <p>Message identifier: <code>disconnectWeb</code></p> <p>Generated when:</p> <ol> <li>The user manually disconnects the website.</li> </ol> <p><img src=/images/plugin-wallet_disconnectWeb.png width=50%></p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
+</code></pre> <h3 id=user-disconnected-website-message>User Disconnected Website Message</h3> <p>Message identifier: <code>disconnectWeb</code></p> <p>Generated when:</p> <ol> <li>The user manually disconnects the website.</li> </ol> <p><img alt=image src=/images/plugin-wallet_disconnectWeb.png>{ width="350" }</p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
   if (e.data.message &amp;&amp; e.data.message.action == &quot;disconnectWeb&quot;) {
       // handler logic
       console.log('got disconnectWeb event', e.data)
   }
 })
-</code></pre> <h3 id=user-confirmed-connection-message>User Confirmed Connection Message</h3> <p>Message identifier: <code>acceptWeb</code></p> <p>Generated when:</p> <ol> <li>The user confirms the connection request.</li> </ol> <p><img src=/images/plugin-wallet_acceptWeb.png width=50%></p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
+</code></pre> <h3 id=user-confirmed-connection-message>User Confirmed Connection Message</h3> <p>Message identifier: <code>acceptWeb</code></p> <p>Generated when:</p> <ol> <li>The user confirms the connection request.</li> </ol> <p><img alt=image src=/images/plugin-wallet_acceptWeb.png>{ width="350" }</p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
   if (e.data.message &amp;&amp; e.data.message.action == &quot;acceptWeb&quot;) {
       // handler logic
       console.log('got acceptWeb event', e.data)
   }
 })
-</code></pre> <h3 id=user-proactively-connected-website-message>User Proactively Connected Website Message</h3> <p>Message identifier: <code>connectWeb</code></p> <p>Generated when:</p> <ol> <li>The user proactively connects to the website.</li> </ol> <p><img src=/images/plugin-wallet_connectWeb.png width=50%></p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
+</code></pre> <h3 id=user-proactively-connected-website-message>User Proactively Connected Website Message</h3> <p>Message identifier: <code>connectWeb</code></p> <p>Generated when:</p> <ol> <li>The user proactively connects to the website.</li> </ol> <p><img alt=image src=/images/plugin-wallet_connectWeb.png>{ width="350" }</p> <p>Developers can listen for this message:</p> <pre><code class=language-typescript>window.addEventListener('message', function (e) {
   if (e.data.message &amp;&amp; e.data.message.action == &quot;connectWeb&quot;) {
       // handler logic
       console.log('got connectWeb event', e.data)
