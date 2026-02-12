@@ -76,11 +76,11 @@ window.dispatchEvent(new Event(&quot;TIP6963:requestProvider&quot;));
   const toAddress = &quot;TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K&quot;;
   const tx = await tronweb.transactionBuilder.sendTrx(toAddress, 10, fromAddress); // 步骤1
   try {
-    const signedTx = await tronweb.trx.signMessageV2(tx); // 步骤2
+    const signedTx = await tronweb.trx.sign(tx); // 步骤2
     await tronweb.trx.sendRawTransaction(signedTx); // 步骤3
   } catch (e) {}
 }
-</code></pre> <p>当代码执行到<code>await tronweb.trx.signMessageV2(tx);</code>时，TronLink钱包会提示弹窗，需要用户进行确认，如下图</p> <p><img alt=image src=../../../images/zh_plugin-wallet_sign_trx.png></p> <p>如果用户在弹窗中选择【拒绝】，则会抛出异常，开发者可捕获此异常进行业务处理</p> <p>如果用户在弹窗中选择【签名】，dapp可以拿到签名后的交易，继续进行广播</p> <h3 id=_20>多签转账</h3> <h4 id=_21>简介</h4> <p>此处可参考<a href=#_13>普通转账</a></p> <h4 id=_22>技术规范</h4> <h5 id=_23>代码示例</h5> <pre><code class=language-typescript>if (window.tronLink.ready) {
+</code></pre> <p>当代码执行到<code>await tronweb.trx.sign(tx);</code>时，TronLink钱包会提示弹窗，需要用户进行确认，如下图</p> <p><img alt=image src=../../../images/zh_plugin-wallet_sign_trx.png></p> <p>如果用户在弹窗中选择【拒绝】，则会抛出异常，开发者可捕获此异常进行业务处理</p> <p>如果用户在弹窗中选择【签名】，dapp可以拿到签名后的交易，继续进行广播</p> <h3 id=_20>多签转账</h3> <h4 id=_21>简介</h4> <p>此处可参考<a href=#_13>普通转账</a></p> <h4 id=_22>技术规范</h4> <h5 id=_23>代码示例</h5> <pre><code class=language-typescript>if (window.tronLink.ready) {
   const tronweb = tronLink.tronWeb;
   const toAddress = &quot;TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K&quot;;
   const activePermissionId = 2;
