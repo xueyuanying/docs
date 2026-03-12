@@ -22,6 +22,27 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/introduction/"/>
     </url>
     <url>
+        <loc>https://docs.tronlink.org/ai-support/mcp-server-tronlink/</loc>
+        <lastmod>2026-03-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://docs.tronlink.org/ai-support/mcp-server-tronlink/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/ai-support/mcp-server-tronlink/"/>
+    </url>
+    <url>
+        <loc>https://docs.tronlink.org/ai-support/tronlink-mcp-core/</loc>
+        <lastmod>2026-03-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://docs.tronlink.org/ai-support/tronlink-mcp-core/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/ai-support/tronlink-mcp-core/"/>
+    </url>
+    <url>
+        <loc>https://docs.tronlink.org/ai-support/tronlink-skills/</loc>
+        <lastmod>2026-03-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://docs.tronlink.org/ai-support/tronlink-skills/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/ai-support/tronlink-skills/"/>
+    </url>
+    <url>
         <loc>https://docs.tronlink.org/dapp/getting-started/</loc>
         <lastmod>2026-03-12</lastmod>
         <changefreq>daily</changefreq>
@@ -124,6 +145,27 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/introduction/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://docs.tronlink.org/introduction/"/>
+    </url>
+    <url>
+        <loc>https://docs.tronlink.org/zh/ai-support/mcp-server-tronlink/</loc>
+        <lastmod>2026-03-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/ai-support/mcp-server-tronlink/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://docs.tronlink.org/ai-support/mcp-server-tronlink/"/>
+    </url>
+    <url>
+        <loc>https://docs.tronlink.org/zh/ai-support/tronlink-mcp-core/</loc>
+        <lastmod>2026-03-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/ai-support/tronlink-mcp-core/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://docs.tronlink.org/ai-support/tronlink-mcp-core/"/>
+    </url>
+    <url>
+        <loc>https://docs.tronlink.org/zh/ai-support/tronlink-skills/</loc>
+        <lastmod>2026-03-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://docs.tronlink.org/zh/ai-support/tronlink-skills/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://docs.tronlink.org/ai-support/tronlink-skills/"/>
     </url>
     <url>
         <loc>https://docs.tronlink.org/zh/dapp/getting-started/</loc>
