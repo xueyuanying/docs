@@ -21,7 +21,7 @@ This document will guide you to connect your DApp with the TronLink application 
     }
 ```
 
-After getting the tronWeb instance, you can perform on-chain interactive actions such as signing transfers, multi-signature transactions, and messages. For use cases of the tronWeb instance, please refer to the following document: <https://tronweb.network/docu/docs/intro/>[](https://tronweb.network/docu/docs/intro/)
+After getting the tronWeb instance, you can perform on-chain interactive actions such as signing transfers, multi-signature transactions, and messages. For use cases of the tronWeb instance, please refer to the following document: <a class="tooltip" href="https://tronweb.network/docu/docs/intro" data-tooltip="https://tronweb.network/docu/docs/intro">https://tronweb.network/docu/docs/intro</a>
 
-Reference: <https://developers.tron.network/docs/introduction>[](https://developers.tron.network/docs/introduction)
+Reference: <a class="tooltip" href="https://developers.tron.network/docs/introduction" data-tooltip="https://developers.tron.network/docs/introduction">https://developers.tron.network/docs/introduction</a>
 

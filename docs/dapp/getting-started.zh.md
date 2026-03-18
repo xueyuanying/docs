@@ -25,6 +25,6 @@
 
 获取 tronWeb 实例后，即可进行 转账签名，多签签名，消息签名等链上交互动作。
 
-具体 tronWeb 实例的使用，可参考以下文档：<https://tronweb.network/docu/docs/intro/>[](https://tronweb.network/docu/docs/intro/)
+具体 tronWeb 实例的使用，可参考以下文档：<a class="tooltip" href="https://tronweb.network/docu/docs/intro" data-tooltip="https://tronweb.network/docu/docs/intro">https://tronweb.network/docu/docs/intro</a>
 
-参考：<https://developers.tron.network/docs/introduction>[](https://developers.tron.network/docs/introduction)
+参考：<a class="tooltip" href="https://developers.tron.network/docs/introduction" data-tooltip="https://developers.tron.network/docs/introduction">https://developers.tron.network/docs/introduction</a>

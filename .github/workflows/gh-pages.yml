@@ -3,7 +3,7 @@ name: Publish Document
 on:
   push:
     branches:
-      - '**' # 监听所有分支
+      - main 
   workflow_dispatch: # 仍保留手动触发的功能
 
 jobs:
@@ -28,9 +28,12 @@ jobs:
     - name: Build the document
       run: mkdocs build
 
+    - name: Add CNAME file
+      run: echo 'docs.tronlink.org' > site/CNAME  
+
     - name: Build and Deploy
-      uses: JamesIves/github-pages-deploy-action@releases/v3
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        BRANCH: gh-pages1 # The branch the action should deploy to.
-        FOLDER: site # The folder the action should deploy.
+        branch: gh-pages       # 部署目标分支
+        folder: site           # 构建产物目录
+        token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 默认的 Token

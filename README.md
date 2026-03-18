@@ -1,72 +1,73 @@
-# TronLink 开发者文档
+# TronLink Developer Documentation
 
-这是 TronLink 钱包的官方开发者文档，提供完整的开发指南和 API 参考。
+This is the official developer documentation for the TronLink wallet, providing comprehensive development guides and API references.
 
-## 📖 文档内容
+## 📖 Documentation Contents
 
-- **介绍** - TronLink 和波场生态介绍
-- **HD 钱包** - HD 钱包相关文档
-- **移动端开发** - 移动端集成指南
-  - 资产管理
-  - DeepLink 集成
-  - DApp 浏览器支持
-- **插件钱包** - 浏览器插件开发
-  - 主动请求功能
-  - 被动消息接收
-- **DApp 开发** - 去中心化应用开发
-  - 多签转账
-  - 消息签名
-  - 普通转账
+- **Introduction** - Overview of TronLink and the TRON ecosystem
+- **HD Wallet** - Documentation related to HD wallets
+- **TronLink App** - Mobile integration guide
+  - Asset Management
+  - DeepLink
+  - DApp Support
+- **TronLink Wallet Extension** - Browser extension development
+  - Request TronLink Extension
+  - Receive messages from TronLink
+- **DApp** - Decentralized application development
+  - Start Developing
+  - Multi-Signature Transfer
+  - Message Signature
+  - General Transfer
   - Stake2.0
 
-## 🚀 快速开始
+## 🚀 Getting Started
 
-### 本地开发
+### Local Development
 
-1. 克隆仓库
+1. Clone the repository
 ```bash
-git clone git@github.com:xueyuanying/tronlink-doc.git
-cd tronlink-doc
+git clone https://github.com/TronLink/docs.git
+cd docs
 ```
 
-2. 安装依赖
+2. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 启动本地服务器
+3. Start the local server
 ```bash
 mkdocs serve
 ```
 
-4. 访问 http://localhost:8000 查看文档
+4. Visit http://localhost:8000 to view the documentation.
 
-### 构建文档
+### Build the Documentation
 
 ```bash
 mkdocs build
 ```
 
-构建后的文件将保存在 `site/` 目录中。
+The built files will be output to the site/ directory.
 
 
-## 🔧 技术栈
+## 🔧 Tech Stack
 
-- [MkDocs](https://www.mkdocs.org/) - 静态站点生成器
-- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) - 主题
-- [GitHub Pages](https://pages.github.com/) - 托管服务
-- [GitHub Actions](https://github.com/features/actions) - 自动部署
+- [MkDocs](https://www.mkdocs.org/) - Static site generator
+- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) - Theme
+- [GitHub Pages](https://pages.github.com/) - Hosting service
+- [GitHub Actions](https://github.com/features/actions) - CI/CD for deployment
 
 
-## 🤝 联系我们
+## 🤝 Contact Us
 
-- 官方网站：https://www.tronlink.org/
+- Official Website: https://www.tronlink.org/
 
-## 📚 相关链接
+## 📚 Related Links
 
-- [TronLink 官网](https://www.tronlink.org/)
-- [波场 TRON 官网](https://tron.network/)
-- [波场开发者中心](https://developers.tron.network/)
+- [TronLink Official Site](https://www.tronlink.org/)
+- [TRON Official Site](https://tron.network/)
+- [TRON Developer Center](https://developers.tron.network/)
 
 
 

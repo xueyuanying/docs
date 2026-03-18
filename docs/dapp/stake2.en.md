@@ -24,5 +24,5 @@ For example:
     transaction.__options = {"estimatedBandwidth": 1}
 ```
 
-The specific calculation logic of estimatedEnergy and estimatedBandwidth can be found in the last chapter of the "[Stake 2.0 Adaptation FAQ](https://coredevs.medium.com/stake-2-0-adaption-faq-66bafdf53606)": "How to convert resource share to amount?"
+The specific calculation logic of estimatedEnergy and estimatedBandwidth can be found in the last chapter of the "[<a class="tooltip" href="https://coredevs.medium.com/stake-2-0-adaption-faq-66bafdf53606" data-tooltip="https://coredevs.medium.com/stake-2-0-adaption-faq-66bafdf53606">Stake 2.0 Adaptation FAQ</a>](https://coredevs.medium.com/stake-2-0-adaption-faq-66bafdf53606)": "How to convert resource share to amount?"
 

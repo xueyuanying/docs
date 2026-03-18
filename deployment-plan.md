@@ -60,6 +60,11 @@
 3. 验证网站是否正常访问
 4. 根据需要进一步优化配置
 
+### 最近文档变更记录
+
+- 移除 DeepLink 英文页面中关于 DApp 白名单申请表单的提示文案（`docs/mobile/deeplink.en.md`）
+- 移除 DeepLink 中文页面中关于 DApp 白名单申请表单的提示文案（`docs/mobile/deeplink.zh.md`）
+
 ## 文件结构
 
 ```
