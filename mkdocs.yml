@@ -65,7 +65,7 @@ plugins:
             - TronLink Wallet Extension:
               - Request TronLink Extension: plugin-wallet/active-requests.en.md
               - Receive messages from TronLink: plugin-wallet/passive-messages.en.md
-              - Upcoming implementation - compatibility adaptation for the v field in the signature returned after Ledger signing: plugin-wallet/ledger-signing-update.en.md
+              - Compatibility for the v field after Ledger signing: plugin-wallet/ledger-signing-update.en.md
             - AI Support: 
               - MCP Server TronLink : ai-support/mcp-server-tronlink.en.md
               - TronLink MCP Core: ai-support/tronlink-mcp-core.en.md
@@ -90,7 +90,7 @@ plugins:
             - 插件钱包:
               - 主动请求TronLink插件功能: plugin-wallet/active-requests.zh.md
               - 被动接收TronLink插件的消息: plugin-wallet/passive-messages.zh.md
-              - 即将实施：对ledger签名后signature的v字段进行兼容改造: plugin-wallet/ledger-signing-update.zh.md
+              - 对ledger签名后的v字段兼容: plugin-wallet/ledger-signing-update.zh.md
             - AI 支持: 
               - MCP Server TronLink : ai-support/mcp-server-tronlink.zh.md
               - TronLink MCP Core: ai-support/tronlink-mcp-core.zh.md
