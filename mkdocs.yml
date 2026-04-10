@@ -70,6 +70,8 @@ plugins:
               - MCP Server TronLink : ai-support/mcp-server-tronlink.en.md
               - TronLink MCP Core: ai-support/tronlink-mcp-core.en.md
               - TronLink Skills: ai-support/tronlink-skills.en.md
+              - MCP TronLink Signer : ai-support/mcp-tronlink-signer.en.md
+              - TronLink Signer : ai-support/tronlink-signer.en.md
             - DApp:
               - Start Developing: dapp/getting-started.en.md
               - Multi-Signature Transfer: dapp/multi-sign-transfer.en.md
@@ -95,6 +97,8 @@ plugins:
               - MCP Server TronLink : ai-support/mcp-server-tronlink.zh.md
               - TronLink MCP Core: ai-support/tronlink-mcp-core.zh.md
               - TronLink Skills: ai-support/tronlink-skills.zh.md
+              - MCP TronLink Signer : ai-support/mcp-tronlink-signer.zh.md
+              - TronLink Signer : ai-support/tronlink-signer.zh.md
             - DApp:
               - 开始开发: dapp/getting-started.zh.md
               - 多签转账: dapp/multi-sign-transfer.zh.md

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main 
+      - '**'
   workflow_dispatch: # 仍保留手动触发的功能
 
 jobs:
