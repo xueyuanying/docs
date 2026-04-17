@@ -72,6 +72,7 @@ plugins:
               - TronLink Skills: ai-support/tronlink-skills.en.md
               - MCP TronLink Signer : ai-support/mcp-tronlink-signer.en.md
               - TronLink Signer : ai-support/tronlink-signer.en.md
+              - TronLink Cli : ai-support/tronlink-cli.en.md
             - DApp:
               - Start Developing: dapp/getting-started.en.md
               - Multi-Signature Transfer: dapp/multi-sign-transfer.en.md
@@ -99,6 +100,7 @@ plugins:
               - TronLink Skills: ai-support/tronlink-skills.zh.md
               - MCP TronLink Signer : ai-support/mcp-tronlink-signer.zh.md
               - TronLink Signer : ai-support/tronlink-signer.zh.md
+              - TronLink Cli : ai-support/tronlink-cli.zh.md
             - DApp:
               - 开始开发: dapp/getting-started.zh.md
               - 多签转账: dapp/multi-sign-transfer.zh.md
