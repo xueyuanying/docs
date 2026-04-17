@@ -1,5 +1,7 @@
 # TronLink CLI
 
+**GitHub**: [https://github.com/TronLink/tronlink-cli](https://github.com/TronLink/tronlink-cli)
+
 CLI tool for TRON blockchain operations via TronLink wallet signing.
 
 All transactions are built locally and signed through the TronLink browser extension — private keys never leave TronLink.
