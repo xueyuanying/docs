@@ -19,8 +19,8 @@ const signer = new TronSigner();
 await signer.start();
 
 const { address, network } = await signer.connectWallet();
-const { txId } = await signer.sendTrx("TXxx...", 1);
-const { txId: txId2, status } = await signer.signTransaction(tx, "nile", true); // 广播 + 自动确认
+const { txId, status } = await signer.sendTrx("TXxx...", 1); // status: "success" | "pending" | "failed"
+const { txId: txId2, status: s2 } = await signer.signTransaction(tx, "nile", true); // 广播 + 自动确认
 const { balance } = await signer.getBalance("TXxx...");
 
 await signer.stop();
@@ -48,9 +48,9 @@ await signer.stop();
 
 打开浏览器连接 TronLink 并获取钱包地址与当前网络。如果钱包已连接（同一浏览器标签页仍打开），则会无需用户交互自动完成。
 
-### `signer.sendTrx(to, amount, network?, options?): Promise<{ txId: string }>`
+### `signer.sendTrx(to, amount, network?, options?): Promise<BroadcastResult>`
 
-向指定地址发送 TRX，会打开浏览器授权页面供用户确认。
+向指定地址发送 TRX，会打开浏览器授权页面供用户确认。返回 `{ txId, status, error? }`，其中 `status` 为 `"success"`、`"pending"` 或 `"failed"`（参见[广播结果](#广播结果)）。
 
 | 参数 | 类型 | 说明 |
 | ---- | ---- | ---- |
@@ -59,16 +59,16 @@ await signer.stop();
 | `network` | `TronNetwork` | 可选，网络覆盖参数 |
 | `options` | `SignerOptions` | 可选，传入 `{ signal }` 可启用取消功能 |
 
-### `signer.sendTrc20(contractAddress, to, amount, decimals?, network?, options?): Promise<{ txId: string }>`
+### `signer.sendTrc20(contractAddress, to, amount, decimals?, network?, options?): Promise<BroadcastResult>`
 
-发送 TRC20 代币，会打开浏览器授权页面。
+发送 TRC20 代币，会打开浏览器授权页面。返回 `{ txId, status, error? }` — 参见[广播结果](#广播结果)。
 
 | 参数 | 类型 | 说明 |
 | ---- | ---- | ---- |
 | `contractAddress` | `string` | TRC20 代币合约地址 |
 | `to` | `string` | 接收方 TRON 地址（base58 格式） |
 | `amount` | `string` | 人类可读单位的金额（如 `"1.5"` 表示 1.5 USDT），精度转换会自动处理 |
-| `decimals` | `number` | 代币精度（默认：6） |
+| `decimals` | `number` | 可选，代币精度。省略时通过合约的 `decimals()` 自动检测（推荐 — 可避免 USDD/SUN/JST 等非 6dp 代币出现 10^N 量级错误） |
 | `network` | `TronNetwork` | 可选，网络覆盖参数 |
 | `options` | `SignerOptions` | 可选，传入 `{ signal }` 可启用取消功能 |
 
@@ -91,9 +91,9 @@ const { signature } = await signer.signTypedData({
 });
 ```
 
-### `signer.signTransaction(transaction, network?, broadcast?, options?): Promise<{ signedTransaction; txId?; status? }>`
+### `signer.signTransaction(transaction, network?, broadcast?, options?): Promise<{ signedTransaction; txId?; status?; error? }>`
 
-对原始交易进行签名。当 `broadcast` 为 `true` 时，签名后的交易会通过 TronLink 广播到链上，且 SDK 会自动轮询链上确认状态（返回 `status: "success"` 或 `"pending"`）。
+对原始交易进行签名。当 `broadcast` 为 `true` 时，签名后的交易会通过 TronLink 广播到链上，且 SDK 会自动轮询链上确认状态 — 可能的 `status` 取值参见[广播结果](#广播结果)。
 
 | 参数 | 类型 | 说明 |
 | ---- | ---- | ---- |
@@ -107,9 +107,10 @@ const { signature } = await signer.signTypedData({
 const { signedTransaction } = await signer.signTransaction(tx);
 
 // 签名、广播并等待确认（默认行为）
-const { signedTransaction, txId, status } = await signer.signTransaction(tx, "nile", true);
+const { signedTransaction, txId, status, error } = await signer.signTransaction(tx, "nile", true);
 // status === "success" — 已在链上确认
 // status === "pending" — 广播成功但在超时时间内未被确认
+// status === "failed"  — 链上执行失败；`error` 包含失败原因
 
 // 广播但不等待确认
 const result = await signer.signTransaction(tx, "nile", true, { confirm: false });
@@ -120,9 +121,23 @@ const result = await signer.signTransaction(tx, "nile", true, {
 });
 ```
 
-### `signer.waitForTransaction(txId, network?, options?): Promise<"success" | "pending">`
+### 广播结果
 
-轮询网络以确认交易状态。当交易在链上确认时返回 `"success"`，达到超时时间则返回 `"pending"`。如果交易执行失败（如 `OUT_OF_ENERGY`、Solidity revert）将抛出异常。
+广播类方法（`sendTrx`、`sendTrc20`、以及 `broadcast: true` 时的 `signTransaction`）均返回 `BroadcastResult`：
+
+```ts
+interface BroadcastResult {
+  txId: string;
+  status: "success" | "pending" | "failed";
+  error?: string; // 当 status === "failed" 时携带
+}
+```
+
+`"failed"` 表示交易已上链但执行失败（如 `OUT_OF_ENERGY`、Solidity revert）。**它不会抛出异常** — 请检查 `status`。SDK 仅在广播本身没有发生时才会抛出（签名异常、用户拒绝、网络不可达等）。
+
+### `signer.waitForTransaction(txId, network?, options?): Promise<{ status; error? }>`
+
+轮询网络以确认交易状态。当交易在链上确认时返回 `{ status: "success" }`；达到超时时间则返回 `{ status: "pending" }`；如果交易 revert / 能量耗尽则返回 `{ status: "failed", error }`。
 
 | 参数 | 类型 | 说明 |
 | ---- | ---- | ---- |
@@ -131,10 +146,9 @@ const result = await signer.signTransaction(tx, "nile", true, {
 | `options` | `WaitForTransactionOptions` | 可选 — `timeoutMs`(默认：30000)、`signal` |
 
 ```ts
-const status = await signer.waitForTransaction(txId, "nile");
-if (status === "success") {
-  console.log("已在链上确认");
-}
+const { status, error } = await signer.waitForTransaction(txId, "nile");
+if (status === "success") console.log("已在链上确认");
+else if (status === "failed") console.warn("执行失败：", error);
 ```
 
 > **提示：** 在使用 `signTransaction` 且 `broadcast: true` 时，确认轮询会自动执行 — 除非设置了 `confirm: false`，否则无需另行调用 `waitForTransaction`。
@@ -239,6 +253,14 @@ interface WaitForTransactionOptions {
   timeoutMs?: number;
   signal?: AbortSignal;
 }
+
+type BroadcastStatus = "success" | "pending" | "failed";
+
+interface BroadcastResult {
+  txId: string;
+  status: BroadcastStatus;
+  error?: string;
+}
 ```
 
 ## 导出
@@ -254,8 +276,9 @@ export { NETWORKS, DEFAULT_HTTP_PORT, REQUEST_TIMEOUT_MS, loadConfig } from "./c
 export type {
   TronNetwork, NetworkConfig, AppConfig,
   PendingRequestType, PendingRequest,
-  ConnectData, SendTrxData, SendTrc20Data,
+  SendTrxData, SendTrc20Data,
   SignMessageData, SignTypedDataData, SignTransactionData,
   SignerOptions, WaitForTransactionOptions,
+  BroadcastStatus, BroadcastResult,
 } from "./types.js";
 ```
