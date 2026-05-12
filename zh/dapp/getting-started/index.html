@@ -21,7 +21,7 @@ window.dispatchEvent(new Event(&quot;TIP6963:requestProvider&quot;));
   // err 结构：{ code: number, message: string }
   console.warn(&quot;授权失败：&quot;, err);
 }
-</code></pre> <table> <thead> <tr> <th>code</th> <th>说明</th> </tr> </thead> <tbody> <tr> <td>4001</td> <td>用户拒绝请求 —— 点击<strong>拒绝</strong>、关闭弹窗，或请求不是来自当前活跃 tab</td> </tr> <tr> <td>-32000</td> <td>钱包锁定状态下，同一来源 20 秒内重复发起 <code>eth_requestAccounts</code>（频控）</td> </tr> <tr> <td>4200</td> <td>不支持的方法</td> </tr> </tbody> </table> <p>完整的 TIP-1102（<code>eth_requestAccounts</code>）规范请参考 <a href=../../plugin-wallet/active-requests/ >主动请求 TronLink 插件功能</a>；旧版 <code>tron_requestAccounts</code> 连接方式也在同一页内。</p> <h2 id=tronweb>获取 <code>tronWeb</code> 实例</h2> <p>简化版连接逻辑 — 如果用户已授权过当前 DApp，直接复用现有连接，否则发起授权请求。</p> <pre><code class=language-javascript>async function getTronWeb() {
+</code></pre> <table> <thead> <tr> <th>code</th> <th>说明</th> </tr> </thead> <tbody> <tr> <td>4001</td> <td>用户拒绝请求 —— 点击<strong>拒绝</strong>、关闭弹窗，或请求不是来自当前活跃标签页</td> </tr> <tr> <td>-32000</td> <td>钱包处于锁定状态时，同一来源 20 秒内重复发起 <code>eth_requestAccounts</code>（频控）</td> </tr> <tr> <td>4200</td> <td>不支持的方法</td> </tr> </tbody> </table> <p>完整的 TIP-1102（<code>eth_requestAccounts</code>）规范请参考 <a href=../../plugin-wallet/active-requests/ >主动请求 TronLink 插件功能</a>；旧版 <code>tron_requestAccounts</code> 连接方式也在同一页内。</p> <h2 id=tronweb>获取 <code>tronWeb</code> 实例</h2> <p>简化版 helper —— 如果用户已授权过当前 DApp，直接复用已有的 <code>tronWeb</code> 实例，否则发起授权请求。</p> <pre><code class=language-javascript>async function getTronWeb() {
   if (!tronProvider) throw new Error(&quot;未检测到 TronLink&quot;);
   if (tronProvider.tronWeb?.ready) {
     return tronProvider.tronWeb;
