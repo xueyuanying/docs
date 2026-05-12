@@ -48,7 +48,7 @@ TronLink supports the TRON mainnet and testnets (Shasta, Nile). Developers can l
         const { action, data } = e.data.message;
 
         switch (action) {
-            // --- Modern authorization flow ---
+            // --- Legacy authorization events (3.x compat, deprecated in future versions) ---
             case "connectWeb":
                 console.log("connectWeb", data);
                 break;

@@ -48,7 +48,7 @@ TronLink 支持 TRON 主网及测试网（Shasta、Nile）。开发者可以在 
         const { action, data } = e.data.message;
 
         switch (action) {
-            // --- 现代授权流程 ---
+            // --- 历史授权事件（兼容 3.x，未来版本将废弃） ---
             case "connectWeb":
                 console.log("connectWeb", data);
                 break;
