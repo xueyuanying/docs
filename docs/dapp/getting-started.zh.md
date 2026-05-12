@@ -4,7 +4,7 @@
 
 ## 概述
 
-TronLink 是一款面向 TRON 网络的浏览器扩展钱包。安装 TronLink 后，DApp 无需自行运行全节点即可与 TRON 网络交互 — TronLink 会向每个页面注入 `window.tronLink` 对象，对外暴露一个 `tronWeb` 实例以及与钱包通信所需的 `request` 方法。
+TronLink 是一款面向 TRON 网络的浏览器扩展钱包。DApp 只要集成 TronLink，便能与 TRON 网络进行通信 — TronLink 会向每个页面注入 `window.tronLink` 对象，对外暴露一个 `tronWeb` 实例以及与钱包通信所需的 `request` 方法。
 
 ## `window.tronLink` 对象
 

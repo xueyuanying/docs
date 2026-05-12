@@ -4,7 +4,7 @@ This document walks you through connecting a DApp to the TronLink wallet end-to-
 
 ## Overview
 
-TronLink is a browser extension wallet for the TRON network. With TronLink installed, your DApp can interact with the TRON network without running its own full node — TronLink injects a `window.tronLink` object into every page, exposing a `tronWeb` instance and a request method for talking to the wallet.
+TronLink is a browser extension wallet for the TRON network. By integrating TronLink, your DApp can communicate with the TRON network — TronLink injects a `window.tronLink` object into every page, exposing a `tronWeb` instance and a request method for talking to the wallet.
 
 ## The `window.tronLink` Object
 
