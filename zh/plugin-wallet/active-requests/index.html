@@ -93,7 +93,7 @@ window.dispatchEvent(new Event(&quot;TIP6963:requestProvider&quot;));
     await tronweb.trx.sendRawTransaction(signedTx); // 步骤3
   } catch (e) {}
 }
-</code></pre> <p>如果用户在弹窗中选择【拒绝】，则会抛出异常，开发者可捕获此异常进行业务处理</p> <p>如果用户在弹窗中选择【签名】，dapp可以拿到签名后的交易，继续进行广播</p> <h3 id=_24>消息签名</h3> <h4 id=_25>简介</h4> <p>dapp需要用户对一个hex消息签名，签名后消息转发给后端进行验签，以此判断用户合法登陆</p> <h4 id=_26>前提</h4> <p>dapp开发者完成【连接网站】请求，用户同意连接</p> <h4 id=_27>技术规范</h4> <h5 id=_28>代码示例</h5> <pre><code class=language-typescript>if (window.tronLink.ready) {
+</code></pre> <p>如果用户在弹窗中选择【拒绝】，则会抛出异常，开发者可捕获此异常进行业务处理</p> <p>如果用户在弹窗中选择【签名】，dapp可以拿到签名后的交易，继续进行广播</p> <h3 id=_24>消息签名</h3> <h4 id=_25>简介</h4> <p>dapp需要用户对一个hex消息签名，签名后消息转发给后端进行验签，以此判断用户合法登录</p> <h4 id=_26>前提</h4> <p>dapp开发者完成【连接网站】请求，用户同意连接</p> <h4 id=_27>技术规范</h4> <h5 id=_28>代码示例</h5> <pre><code class=language-typescript>if (window.tronLink.ready) {
   const tronweb = tronLink.tronWeb;
   try {
     const message = &quot;0x01EF&quot;; // any hex string
