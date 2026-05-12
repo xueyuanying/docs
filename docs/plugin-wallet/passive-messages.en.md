@@ -5,6 +5,40 @@ The content received by a DApp is a `MessageEvent`.
 Refer to the [MessageEvent MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent).
 
 
+### Initialization Event
+
+Event identifier: `tronLink#initialized`
+
+#### Overview
+
+Fired on `window` after TronLink finishes injecting `window.tronLink` into the page. Use it to safely wait for the wallet object before calling any of its methods, instead of polling.
+
+#### Technical Specification
+
+##### Code Example
+
+```javascript
+if (window.tronLink) {
+  handleTronLink();
+} else {
+  window.addEventListener('tronLink#initialized', handleTronLink, {
+    once: true,
+  });
+  // Fallback in case the event was missed
+  setTimeout(handleTronLink, 3000);
+}
+
+function handleTronLink() {
+  const { tronLink } = window;
+  if (tronLink) {
+    console.log('tronLink successfully detected!');
+  } else {
+    console.log('Please install TronLink-Extension!');
+  }
+}
+```
+
+
 ### Account Change Message
 
 Message identifier: `accountsChanged`
@@ -236,4 +270,54 @@ window.addEventListener('message', function (e) {
       console.log('got connectWeb event', e.data)
   }
 })
+```
+
+---
+
+### Deprecated 3.x Events (Mainchain / Sidechain)
+
+The following events were used by TronLink 3.x to detect the active network and account via raw `window.postMessage`. They have been superseded by the modern `accountsChanged` / `chainChanged` listeners on `window.tron` and are kept here for reference only — new integrations should not use them.
+
+#### Network Initialization (`tabReply`)
+
+Fired once after page load when TronLink finishes initializing. Inspect `e.data.message.data.data.node.chain` to determine whether the wallet is on the mainchain (`'_'`) or a sidechain (any other identifier).
+
+```javascript
+window.addEventListener('message', function (e) {
+  if (e.data.message && e.data.message.action == "tabReply") {
+    if (e.data.message.data.data.node.chain == '_') {
+      console.log("tronLink currently selects the main chain");
+    } else {
+      console.log("tronLink currently selects the side chain");
+    }
+  }
+});
+```
+
+#### Account Switch (`setAccount`)
+
+Fired when the user switches the active account.
+
+```javascript
+window.addEventListener('message', function (e) {
+  if (e.data.message && e.data.message.action == "setAccount") {
+    console.log("current address:", e.data.message.data.address);
+  }
+});
+```
+
+#### Network Switch (`setNode`)
+
+Fired when the user changes the network. Same `chain == '_'` convention as `tabReply`.
+
+```javascript
+window.addEventListener('message', function (e) {
+  if (e.data.message && e.data.message.action == "setNode") {
+    if (e.data.message.data.node.chain == '_') {
+      console.log("tronLink currently selects the main chain");
+    } else {
+      console.log("tronLink currently selects the side chain");
+    }
+  }
+});
 ```

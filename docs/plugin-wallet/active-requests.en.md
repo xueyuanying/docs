@@ -309,6 +309,8 @@ Sign → signed message returned.
 
 A DApp can provide a button allowing users to directly add a token to their TronLink asset list.
 
+> **Note:** Only assets on the **mainnet** and **Nile testnet** can be added. Shasta testnet assets are not supported.
+
 #### Technical Specification
 
 ##### Code Example

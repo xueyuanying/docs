@@ -2,6 +2,39 @@
 
 消息使用window.postMessage发送，dapp接收到的内容是一个MessageEvent，可以参考[MessageEvent的MDN文档](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent)
 
+### 初始化完成事件
+
+事件标识：`tronLink#initialized`
+
+#### 简介
+
+当 TronLink 完成 `window.tronLink` 注入后，会在 `window` 上派发该事件。可用它在调用任何钱包方法前安全地等待对象就绪，避免轮询。
+
+#### 技术规范
+
+##### 代码示例
+
+```javascript
+if (window.tronLink) {
+  handleTronLink();
+} else {
+  window.addEventListener('tronLink#initialized', handleTronLink, {
+    once: true,
+  });
+  // 兜底：防止事件已经错过
+  setTimeout(handleTronLink, 3000);
+}
+
+function handleTronLink() {
+  const { tronLink } = window;
+  if (tronLink) {
+    console.log('tronLink successfully detected!');
+  } else {
+    console.log('Please install TronLink-Extension!');
+  }
+}
+```
+
 ### 账户改变消息
 
 消息标识： `accountsChanged`
@@ -197,4 +230,54 @@ window.addEventListener('message', function (e) {
       console.log('got connectWeb event', e.data)
   }
 })
+```
+
+---
+
+### 已废弃的 3.x 事件（主链 / 侧链）
+
+以下事件是 TronLink 3.x 通过原始 `window.postMessage` 用于检测当前网络与账户的方式。它们已被 `window.tron` 上的 `accountsChanged` / `chainChanged` 取代，仅供存量代码参考 — 新接入请勿使用。
+
+#### 网络初始化（`tabReply`）
+
+页面加载后 TronLink 完成初始化时触发一次。检查 `e.data.message.data.data.node.chain`：值为 `'_'` 表示主链，其他值表示对应侧链标识。
+
+```javascript
+window.addEventListener('message', function (e) {
+  if (e.data.message && e.data.message.action == "tabReply") {
+    if (e.data.message.data.data.node.chain == '_') {
+      console.log("tronLink 当前选择主链");
+    } else {
+      console.log("tronLink 当前选择侧链");
+    }
+  }
+});
+```
+
+#### 账户切换（`setAccount`）
+
+用户切换当前账户时触发。
+
+```javascript
+window.addEventListener('message', function (e) {
+  if (e.data.message && e.data.message.action == "setAccount") {
+    console.log("当前地址：", e.data.message.data.address);
+  }
+});
+```
+
+#### 网络切换（`setNode`）
+
+用户切换网络时触发。`chain == '_'` 的判断方式与 `tabReply` 相同。
+
+```javascript
+window.addEventListener('message', function (e) {
+  if (e.data.message && e.data.message.action == "setNode") {
+    if (e.data.message.data.node.chain == '_') {
+      console.log("tronLink 当前选择主链");
+    } else {
+      console.log("tronLink 当前选择侧链");
+    }
+  }
+});
 ```
