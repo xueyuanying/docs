@@ -4,15 +4,17 @@ This document walks you through connecting a DApp to the TronLink wallet end-to-
 
 ## Overview
 
-TronLink is a browser extension wallet for the TRON network. By integrating TronLink, your DApp can communicate with the TRON network — TronLink injects a `window.tron` object into every page, exposing a `tronWeb` instance and a `request` method for talking to the wallet.
+TronLink is a browser extension wallet for the TRON network. By integrating TronLink, your DApp can communicate with the TRON network — TronLink injects a `window.tron` object into every page, exposing a `tronWeb` instance, a `request` method, and `on` / `removeListener` for event subscription.
 
 ## The `window.tron` Object
 
 ```typescript
 interface TronProvider {
   isTronLink: true;
-  request: (args: { method: string; params?: any }) => Promise<any>; // Method used by the DApp to invoke wallet features
-  tronWeb: TronWeb;          // TronWeb instance bound to the user's current account/network
+  request: (args: { method: string; params?: any }) => Promise<any>;     // Invoke wallet features (e.g. eth_requestAccounts)
+  tronWeb: TronWeb | false;                                              // Bound to the user's current account/network after authorization; `false` until then
+  on(event: string, listener: (...args: any[]) => void): this;           // Subscribe to provider events (accountsChanged / chainChanged / connect)
+  removeListener(event: string, listener: (...args: any[]) => void): this;
 }
 ```
 
@@ -23,18 +25,18 @@ Once the user authorizes the connection, `window.tron.tronWeb` is fully usable f
 TIP-6963 is the recommended way to detect TronLink (and other TRON wallets) without polluting the global namespace. Listen for `TIP6963:announceProvider` events and dispatch a `TIP6963:requestProvider` to ask installed wallets to announce themselves.
 
 ```javascript
-let provider;
+let tronProvider;
 
 window.addEventListener("TIP6963:announceProvider", (e) => {
   if (e.detail.info && e.detail.info.name === "TronLink") {
-    provider = e.detail.provider;
+    tronProvider = e.detail.provider; // === window.tron
   }
 });
 
 window.dispatchEvent(new Event("TIP6963:requestProvider"));
 ```
 
-If `provider` is still undefined after dispatching the request, TronLink is not installed — prompt the user to install it.
+If `tronProvider` is still undefined after dispatching the request, TronLink is not installed — prompt the user to install it.
 
 ## Request Authorization
 
@@ -42,7 +44,7 @@ Use `eth_requestAccounts` to ask the user to connect their wallet. On approval t
 
 ```typescript
 try {
-  const accounts: string[] = await tron.request({ method: "eth_requestAccounts" });
+  const accounts: string[] = await tronProvider.request({ method: "eth_requestAccounts" });
   console.log("Connected:", accounts[0]);
 } catch (err) {
   // err shape: { code: number, message: string }
@@ -52,11 +54,11 @@ try {
 
 | code   | Description |
 | ------ | ----------- |
-| 4001   | User rejected the request (clicked Reject, closed the popup, or the request did not come from the active tab) |
-| -32000 | DApp requests are too frequent (rate-limited while the wallet is locked) |
+| 4001   | User rejected the request — clicked **Reject**, closed the popup, or the request was not from the active tab |
+| -32000 | Same origin issued another `eth_requestAccounts` within 20 seconds while the wallet was locked (rate-limited) |
 | 4200   | Unsupported method |
 
-For the full TIP-1102 specification, error codes and the legacy connection method, see [Proactively Request TronLink Plugin Features](../plugin-wallet/active-requests.md).
+For the full TIP-1102 (`eth_requestAccounts`) specification, see [Proactively Request TronLink Plugin Features](../plugin-wallet/active-requests.md); the legacy `tron_requestAccounts` connection method is documented on the same page.
 
 ## Get the `tronWeb` Instance
 
@@ -64,13 +66,16 @@ The simplest connection helper — reuses the existing connection if the user al
 
 ```javascript
 async function getTronWeb() {
-  if (window.tron.tronWeb?.ready) {
-    return window.tron.tronWeb;
+  if (!tronProvider) throw new Error("TronLink is not installed");
+  if (tronProvider.tronWeb?.ready) {
+    return tronProvider.tronWeb;
   }
-  await window.tron.request({ method: "eth_requestAccounts" });
-  return window.tron.tronWeb;
+  await tronProvider.request({ method: "eth_requestAccounts" });
+  return tronProvider.tronWeb;
 }
 ```
+
+`tronProvider.tronWeb` is normally usable as soon as `eth_requestAccounts` resolves. For everything that happens *after* the initial connection — the user switching accounts, locking the wallet, or changing networks — listen for `accountsChanged` / `chainChanged` on the provider. See [Receive Messages from TronLink](../plugin-wallet/passive-messages.md) for the full event set.
 
 After obtaining the `tronWeb` instance you can perform on-chain interactions: TRX/TRC20 transfers, multi-signature transactions, message signing, contract calls, and so on. For full `tronWeb` API usage, see the [TronWeb documentation](https://tronweb.network/docu/docs/intro).
 
@@ -88,26 +93,26 @@ The following self-contained HTML example detects TronLink via TIP-6963, request
   <body>
     <button onclick="connect()">Connect TronLink</button>
     <script>
-      let provider;
+      let tronProvider;
 
       window.addEventListener("TIP6963:announceProvider", (e) => {
         if (e.detail.info && e.detail.info.name === "TronLink") {
-          provider = e.detail.provider;
+          tronProvider = e.detail.provider;
         }
       });
       window.dispatchEvent(new Event("TIP6963:requestProvider"));
 
       async function connect() {
-        if (!provider) return alert("TronLink not found!");
+        if (!tronProvider) return alert("TronLink not found!");
         try {
-          const accounts = await provider.request({
+          const accounts = await tronProvider.request({
             method: "eth_requestAccounts",
           });
           console.log("Connected:", accounts[0]);
 
-          const tronweb = provider.tronWeb;
+          const tronweb = tronProvider.tronWeb;
           const from = tronweb.defaultAddress.base58;
-          const to = "TN9RRaXkCFtTXRso2GdTZxSxxwufzxLQPP";
+          const to = "TN9RRaXkCFtTXRso2GdTZxSxxwufzxLQPP"; // replace with the actual recipient address
 
           // Build a 10 SUN TRX transfer (amount unit is SUN: 1 TRX = 1_000_000 SUN)
           const tx = await tronweb.transactionBuilder.sendTrx(to, 10, from);
