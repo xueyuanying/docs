@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/integrate-tronlink-integration
   workflow_dispatch: # 仍保留手动触发的功能
 
 jobs:
