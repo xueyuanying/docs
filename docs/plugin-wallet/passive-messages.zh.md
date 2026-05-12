@@ -1,6 +1,95 @@
 # 被动接收TronLink插件的消息
 
-消息使用window.postMessage发送，dapp接收到的内容是一个MessageEvent，可以参考[MessageEvent的MDN文档](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent)
+TronLink 目前支持侧链与主链。开发者可以在 DApp 中监听 TronLink 派发的事件消息，以判断当前选择的是侧链还是主链，以及当前选择的账户。下面通过一个简单示例进行演示。
+
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TronLink Events Demo</title>
+</head>
+<body>
+<script>
+    // 1. 等待 TronLink 注入 window.tronLink 后注册现代 API 监听
+    function handleTronLink() {
+        if (!window.tronLink) {
+            console.log("请安装 TronLink 扩展！");
+            return;
+        }
+        console.log("tronLink 检测成功！");
+
+        // 现代 API（window.tron.on）— 推荐使用
+        window.tron.on("accountsChanged", (accounts) => {
+            console.log("accountsChanged", accounts); // 钱包锁定时为 []
+        });
+        window.tron.on("chainChanged", ({ chainId }) => {
+            console.log("chainChanged", chainId);
+        });
+        window.tron.on("connect", ({ chainId }) => {
+            console.log("connect", chainId);
+        });
+        window.tron.on("disconnect", (err) => {
+            console.log("disconnect", err); // { code: 4900, message: 'Disconnected' }
+        });
+    }
+
+    if (window.tronLink) {
+        handleTronLink();
+    } else {
+        window.addEventListener("tronLink#initialized", handleTronLink, { once: true });
+        setTimeout(handleTronLink, 3000); // 兜底：防止事件已经错过
+    }
+
+    // 2. 原始 window.postMessage 事件 — 涵盖旧版 3.x 事件与授权流程
+    window.addEventListener("message", function (e) {
+        if (!e.data || !e.data.message) return;
+        const { action, data } = e.data.message;
+
+        switch (action) {
+            // --- 现代授权流程 ---
+            case "connectWeb":
+                console.log("connectWeb", data);
+                break;
+            case "acceptWeb":
+                console.log("acceptWeb", data);
+                break;
+            case "rejectWeb":
+                console.log("rejectWeb", data);
+                break;
+            case "disconnectWeb":
+                console.log("disconnectWeb", data);
+                break;
+
+            // --- 已废弃的 3.x 事件（主链 / 侧链检测） ---
+            case "tabReply":
+                if (data?.data?.node?.chain === "_") {
+                    console.log("tronLink 当前选择主链");
+                } else {
+                    console.log("tronLink 当前选择侧链");
+                }
+                break;
+            case "setAccount":
+                console.log("setAccount，当前地址：", data.address);
+                break;
+            case "setNode":
+                if (data?.node?.chain === "_") {
+                    console.log("tronLink 当前选择主链");
+                } else {
+                    console.log("tronLink 当前选择侧链");
+                }
+                break;
+        }
+    });
+</script>
+</body>
+</html>
+```
+
+下面分别对每个监听器进行详细说明，含返回值与截图。
+
+---
 
 ### 初始化完成事件
 
@@ -139,6 +228,8 @@ tron.on('disconnect', (providerRpcError: ProviderRpcError) => {
   console.error(connectInfo); // { code: 4900, message: 'Disconnected' }
 })
 ```
+
+以下消息通过 `window.postMessage` 派发，DApp 接收到的内容是一个 `MessageEvent`，事件结构可参考 [MessageEvent 的 MDN 文档](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent)。
 
 ### 历史遗留问题
 以下四个消息为了兼容3.x保留，并在未来版本将会被废弃

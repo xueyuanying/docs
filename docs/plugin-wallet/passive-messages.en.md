@@ -1,9 +1,95 @@
 # Passively Receiving Messages from the TronLink Plugin
 
-Messages are sent using `window.postMessage`.  
-The content received by a DApp is a `MessageEvent`.  
-Refer to the [MessageEvent MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent).
+TronLink currently supports sidechains and mainchains. Developers can detect the event message sent by TronLink in DApp to analyze whether is the sidechain or mainchain currently selected by TronLink, and which account is currently selected. Let's learn it with a simple example.
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TronLink Events Demo</title>
+</head>
+<body>
+<script>
+    // 1. Wait for TronLink to inject window.tronLink, then wire up modern listeners
+    function handleTronLink() {
+        if (!window.tronLink) {
+            console.log("Please install TronLink-Extension!");
+            return;
+        }
+        console.log("tronLink successfully detected!");
+
+        // Modern API (window.tron.on) — preferred
+        window.tron.on("accountsChanged", (accounts) => {
+            console.log("accountsChanged", accounts); // [] when locked
+        });
+        window.tron.on("chainChanged", ({ chainId }) => {
+            console.log("chainChanged", chainId);
+        });
+        window.tron.on("connect", ({ chainId }) => {
+            console.log("connect", chainId);
+        });
+        window.tron.on("disconnect", (err) => {
+            console.log("disconnect", err); // { code: 4900, message: 'Disconnected' }
+        });
+    }
+
+    if (window.tronLink) {
+        handleTronLink();
+    } else {
+        window.addEventListener("tronLink#initialized", handleTronLink, { once: true });
+        setTimeout(handleTronLink, 3000); // fallback in case the event was missed
+    }
+
+    // 2. Raw window.postMessage events — covers legacy 3.x events and authorization flow
+    window.addEventListener("message", function (e) {
+        if (!e.data || !e.data.message) return;
+        const { action, data } = e.data.message;
+
+        switch (action) {
+            // --- Modern authorization flow ---
+            case "connectWeb":
+                console.log("connectWeb", data);
+                break;
+            case "acceptWeb":
+                console.log("acceptWeb", data);
+                break;
+            case "rejectWeb":
+                console.log("rejectWeb", data);
+                break;
+            case "disconnectWeb":
+                console.log("disconnectWeb", data);
+                break;
+
+            // --- Deprecated 3.x events (mainchain / sidechain detection) ---
+            case "tabReply":
+                if (data?.data?.node?.chain === "_") {
+                    console.log("tronLink currently selects the main chain");
+                } else {
+                    console.log("tronLink currently selects the side chain");
+                }
+                break;
+            case "setAccount":
+                console.log("setAccount, current address:", data.address);
+                break;
+            case "setNode":
+                if (data?.node?.chain === "_") {
+                    console.log("tronLink currently selects the main chain");
+                } else {
+                    console.log("tronLink currently selects the side chain");
+                }
+                break;
+        }
+    });
+</script>
+</body>
+</html>
+```
+
+The remainder of this page documents each listener individually, including return values and screenshots.
+
+---
 
 ### Initialization Event
 
@@ -177,6 +263,8 @@ tron.on('disconnect', (providerRpcError: ProviderRpcError) => {
 ```
 
 ---
+
+The remaining messages are dispatched via `window.postMessage`. The content received by a DApp is a `MessageEvent` — see the [MessageEvent MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent) for the event shape.
 
 ### Legacy Compatibility Messages
 
