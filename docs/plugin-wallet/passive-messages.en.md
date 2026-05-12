@@ -90,7 +90,7 @@ Event identifier: `TIP6963:announceProvider`
 
 TronLink announces its provider object via the TIP-6963 protocol. Listen for `TIP6963:announceProvider` and dispatch `TIP6963:requestProvider` to safely discover the wallet without polluting the global namespace or polling `window.tron`. The provider returned by the announce event is the same instance as `window.tron`.
 
-For the full TIP-6963 specification, see [Proactively Request TronLink Plugin Features](./active-requests.md).
+For the full TIP-6963 specification, see [Proactively Request TronLink Plugin Features](./active-requests.md#get-tronlink-provider-via-tip-6963).
 
 #### Technical Specification
 
@@ -243,7 +243,7 @@ The TIP-1193 spec defines `disconnect` to fire with a `ProviderRpcError` when th
 
 ```typescript
 // Reserved by the spec — listener is harmless to register, but will not fire today.
-tron.on('disconnect', (providerRpcError) => {
+window.tron.on('disconnect', (providerRpcError) => {
   console.error(providerRpcError); // { code: 4900, message: 'Disconnected' }
 })
 ```
@@ -261,7 +261,7 @@ The following four messages are retained for compatibility with version 3.x and 
 3. User confirmed connection → `acceptWeb`  
 4. User proactively connected the website → `connectWeb`  
 
-### User Rejected Connection Message
+#### User Rejected Connection Message
 
 Message identifier: `rejectWeb`
 
@@ -283,7 +283,7 @@ window.addEventListener('message', function (e) {
 ```
 
 
-### User Disconnected Website Message
+#### User Disconnected Website Message
 
 Message identifier: `disconnectWeb`
 
@@ -304,7 +304,7 @@ window.addEventListener('message', function (e) {
 })
 ```
 
-### User Confirmed Connection Message
+#### User Confirmed Connection Message
 
 Message identifier: `acceptWeb`
 
@@ -325,7 +325,7 @@ window.addEventListener('message', function (e) {
 })
 ```
 
-### User Proactively Connected Website Message
+#### User Proactively Connected Website Message
 
 Message identifier: `connectWeb`
 

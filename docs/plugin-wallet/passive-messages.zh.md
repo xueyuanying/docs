@@ -90,7 +90,7 @@ TronLink 支持 TRON 主网及测试网（Shasta、Nile）。开发者可以在 
 
 TronLink 通过 TIP-6963 协议对外公告自己的 provider 对象。监听 `TIP6963:announceProvider` 并派发 `TIP6963:requestProvider`，即可安全地发现钱包，无需污染全局命名空间或轮询 `window.tron`。announce 事件返回的 provider 即为 `window.tron`。
 
-完整的 TIP-6963 规范请参考 [主动请求 TronLink 插件功能](./active-requests.md)。
+完整的 TIP-6963 规范请参考 [主动请求 TronLink 插件功能](./active-requests.md#tronlinkprovider-tip-6963)。
 
 #### 技术规范
 
@@ -211,7 +211,7 @@ TIP-1193 规范规定：当 provider 与所有链断开连接时，应派发 `di
 ##### 代码示例
 ```typescript
 // 规范保留事件——注册监听器无害，但当前不会被触发。
-tron.on('disconnect', (providerRpcError) => {
+window.tron.on('disconnect', (providerRpcError) => {
   console.error(providerRpcError); // { code: 4900, message: 'Disconnected' }
 })
 ```
