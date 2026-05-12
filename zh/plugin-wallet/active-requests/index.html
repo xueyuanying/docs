@@ -102,7 +102,7 @@ window.dispatchEvent(new Event(&quot;TIP6963:requestProvider&quot;));
 }
 </code></pre> <h5 id=_29>参数</h5> <p><code>tronLink.tronWeb.trx.signMessageV2</code>接收一个十六进制的字符串作为参数，该字符串表示当前待签名的内容</p> <h5 id=_30>返回值</h5> <p>如果用户在弹窗中选择签名, dapp可以得到签名后的十六进制字符串, 比如：</p> <pre><code>0xaa302ca153b10dff25b5f00a7e2f603c5916b8f6d78cdaf2122e24cab56ad39a79f60ff3916dde9761baaadea439b567475dde183ee3f8530b4cc76082b29c341c
 </code></pre> <p>如果报错，则会返回如下信息</p> <pre><code class=language-typescript>Uncaught (in promise) Invalid transaction provided
-</code></pre> <h4 id=_31>交互流程</h4> <p>当代码执行到<code>await tronweb.trx.signMessageV2(message);</code>时，TronLink钱包会提示弹窗，需要用户进行确认， 如下图, 其中消息内容会以hex的方式展示</p> <p><img alt=image src=../../../images/zh_plugin-wallet_sign_message.png></p> <p>如果用户在弹窗中选择【拒绝】，则会抛出异常，开发者可捕获此异常进行业务处理</p> <h3 id=_32>添加资产</h3> <h4 id=_33>简介</h4> <p>dapp提供按钮给用户， 直接将指定的Token添加到用户插件的资产展示列表中</p> <blockquote> <p><strong>注意：</strong> 目前仅支持添加<strong>主网</strong>和 <strong>Nile 测试网</strong>的资产，不支持 Shasta 测试网。</p> </blockquote> <h4 id=_34>技术规范</h4> <h5 id=_35>代码示例</h5> <pre><code class=language-typescript>const res = await tronWeb.request(
+</code></pre> <h4 id=_31>交互流程</h4> <p>当代码执行到<code>await tronweb.trx.signMessageV2(message);</code>时，TronLink钱包会提示弹窗，需要用户进行确认， 如下图, 其中消息内容会以hex的方式展示</p> <p><img alt=image src=../../../images/zh_plugin-wallet_sign_message.png></p> <p>如果用户在弹窗中选择【拒绝】，则会抛出异常，开发者可捕获此异常进行业务处理</p> <h3 id=_32>添加资产</h3> <h4 id=_33>简介</h4> <p>dapp提供按钮给用户， 直接将指定的Token添加到用户插件的资产展示列表中</p> <h4 id=_34>技术规范</h4> <h5 id=_35>代码示例</h5> <pre><code class=language-typescript>const res = await tronWeb.request(
   {
     method: 'wallet_watchAsset',
     params: {
