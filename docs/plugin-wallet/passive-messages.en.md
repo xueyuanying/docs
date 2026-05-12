@@ -264,9 +264,9 @@ tron.on('disconnect', (providerRpcError: ProviderRpcError) => {
 
 ---
 
-The remaining messages are dispatched via `window.postMessage`. The content received by a DApp is a `MessageEvent` — see the [MessageEvent MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent) for the event shape.
-
 ### Legacy Compatibility Messages
+
+The remaining messages are dispatched via `window.postMessage`. The content received by a DApp is a `MessageEvent` — see the [MessageEvent MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent) for the event shape.
 
 The following four messages are retained for compatibility with version 3.x and will be deprecated in future versions:
 

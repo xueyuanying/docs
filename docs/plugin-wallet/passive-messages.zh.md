@@ -229,10 +229,11 @@ tron.on('disconnect', (providerRpcError: ProviderRpcError) => {
 })
 ```
 
+### 历史遗留问题
+
 以下消息通过 `window.postMessage` 派发，DApp 接收到的内容是一个 `MessageEvent`，事件结构可参考 [MessageEvent 的 MDN 文档](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent)。
 
-### 历史遗留问题
-以下四个消息为了兼容3.x保留，并在未来版本将会被废弃
+以下四个消息为了兼容 3.x 保留，并在未来版本将会被废弃：
 
 1. 用户拒绝连接消息`rejectWeb`
 
