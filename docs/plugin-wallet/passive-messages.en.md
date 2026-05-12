@@ -12,35 +12,26 @@ TronLink supports the TRON mainnet and testnets (Shasta, Nile). Developers can l
 </head>
 <body>
 <script>
-    // 1. Wait for TronLink to inject window.tronLink, then wire up modern listeners
-    function handleTronLink() {
-        if (!window.tronLink) {
-            console.log("Please install TronLink-Extension!");
-            return;
+    // 1. Discover the TronLink provider via TIP-6963, then register event listeners on it
+    let tron;
+    window.addEventListener("TIP6963:announceProvider", (e) => {
+        if (e.detail.info && e.detail.info.name === "TronLink") {
+            tron = e.detail.provider; // === window.tron
+            console.log("TronLink successfully detected!");
+
+            tron.on("accountsChanged", (accounts) => {
+                console.log("accountsChanged", accounts); // [] when locked
+            });
+            tron.on("chainChanged", ({ chainId }) => {
+                console.log("chainChanged", chainId);
+            });
+            tron.on("connect", ({ chainId }) => {
+                console.log("connect", chainId);
+            });
         }
-        console.log("tronLink successfully detected!");
-
-        // Modern API (window.tron.on) — preferred
-        window.tron.on("accountsChanged", (accounts) => {
-            console.log("accountsChanged", accounts); // [] when locked
-        });
-        window.tron.on("chainChanged", ({ chainId }) => {
-            console.log("chainChanged", chainId);
-        });
-        window.tron.on("connect", ({ chainId }) => {
-            console.log("connect", chainId);
-        });
-        window.tron.on("disconnect", (err) => {
-            console.log("disconnect", err); // { code: 4900, message: 'Disconnected' }
-        });
-    }
-
-    if (window.tronLink) {
-        handleTronLink();
-    } else {
-        window.addEventListener("tronLink#initialized", handleTronLink, { once: true });
-        setTimeout(handleTronLink, 3000); // fallback in case the event was missed
-    }
+    });
+    // Ask already-loaded wallets to re-announce themselves
+    window.dispatchEvent(new Event("TIP6963:requestProvider"));
 
     // 2. Raw window.postMessage events — covers legacy 3.x events and authorization flow
     window.addEventListener("message", function (e) {
@@ -91,38 +82,33 @@ The remainder of this page documents each listener individually, including retur
 
 ---
 
-### Initialization Event
+### Detect TronLink (TIP-6963)
 
-Event identifier: `tronLink#initialized`
+Event identifier: `TIP6963:announceProvider`
 
 #### Overview
 
-Fired on `window` after TronLink finishes injecting `window.tronLink` into the page. Use it to safely wait for the wallet object before calling any of its methods, instead of polling.
+TronLink announces its provider object via the TIP-6963 protocol. Listen for `TIP6963:announceProvider` and dispatch `TIP6963:requestProvider` to safely discover the wallet without polluting the global namespace or polling `window.tron`. The provider returned by the announce event is the same instance as `window.tron`.
+
+For the full TIP-6963 specification, see [Proactively Request TronLink Plugin Features](./active-requests.md).
 
 #### Technical Specification
 
 ##### Code Example
 
 ```javascript
-if (window.tronLink) {
-  handleTronLink();
-} else {
-  window.addEventListener('tronLink#initialized', handleTronLink, {
-    once: true,
-  });
-  // Fallback in case the event was missed
-  setTimeout(handleTronLink, 3000);
-}
-
-function handleTronLink() {
-  const { tronLink } = window;
-  if (tronLink) {
-    console.log('tronLink successfully detected!');
-  } else {
-    console.log('Please install TronLink-Extension!');
+let tron;
+window.addEventListener('TIP6963:announceProvider', (e) => {
+  if (e.detail.info && e.detail.info.name === 'TronLink') {
+    tron = e.detail.provider; // === window.tron
+    console.log('TronLink successfully detected!');
   }
-}
+});
+// Ask already-loaded wallets to re-announce themselves
+window.dispatchEvent(new Event('TIP6963:requestProvider'));
 ```
+
+If `tron` is still undefined after dispatching the request, TronLink is not installed — prompt the user to install it.
 
 
 ### Account Change Message
@@ -225,12 +211,9 @@ Message identifier: `connect`
 
 #### Overview
 
-If TronLink and the `window.tron` object are available, this event will always be emitted.
+If TronLink and the `window.tron` object are available, this event will be emitted once after the provider finishes initialization (it includes the case where the provider reconnects after a `disconnect`).
 
-This includes:
-
-- After the provider initializes and connects to a chain.  
-- After a `disconnect` event when the provider reconnects to a chain.  
+**Timing caveat:** the event is emitted shortly (~100ms) after the extension finishes initializing. If your DApp registers the listener *after* the extension has already initialized — e.g. when the DApp loads via TIP-6963 `requestProvider` on a slow / late-mounted page — the `connect` event may have already fired and the listener will not be called. In that case, treat the provider's existence as the "connected" signal and fall back to `tron.tronWeb?.ready` for the current state.
 
 #### Technical Specification
 
@@ -239,7 +222,7 @@ This includes:
 ```typescript
 window.tron.on('connect', ({chainId}) => {
   // handler logic
-  console.log('got accountsChanged event', chainId)
+  console.log('got connect event', chainId)
 })
 ```
 
@@ -250,15 +233,18 @@ Message identifier: `disconnect`
 
 #### Overview
 
-If the provider disconnects from all chains, it must emit a `disconnect` event and return a `ProviderRpcError` object.
+The TIP-1193 spec defines `disconnect` to fire with a `ProviderRpcError` when the provider disconnects from all chains.
+
+**Current TronLink behavior:** TronLink does **not** currently emit `disconnect` on its provider. When the user disconnects a site (or the wallet is locked), the disconnect is surfaced via `accountsChanged` with an empty array (`[]`). Treat that as the disconnect signal until TronLink implements `disconnect`.
 
 #### Technical Specification
 
 ##### Code Example
 
 ```typescript
-tron.on('disconnect', (providerRpcError: ProviderRpcError) => {
-  console.error(connectInfo); // { code: 4900, message: 'Disconnected' }
+// Reserved by the spec — listener is harmless to register, but will not fire today.
+tron.on('disconnect', (providerRpcError) => {
+  console.error(providerRpcError); // { code: 4900, message: 'Disconnected' }
 })
 ```
 

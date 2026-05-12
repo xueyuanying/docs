@@ -12,35 +12,26 @@ TronLink 支持 TRON 主网及测试网（Shasta、Nile）。开发者可以在 
 </head>
 <body>
 <script>
-    // 1. 等待 TronLink 注入 window.tronLink 后注册现代 API 监听
-    function handleTronLink() {
-        if (!window.tronLink) {
-            console.log("请安装 TronLink 扩展！");
-            return;
+    // 1. 通过 TIP-6963 发现 TronLink provider，并在该 provider 上注册事件监听
+    let tron;
+    window.addEventListener("TIP6963:announceProvider", (e) => {
+        if (e.detail.info && e.detail.info.name === "TronLink") {
+            tron = e.detail.provider; // === window.tron
+            console.log("TronLink 检测成功！");
+
+            tron.on("accountsChanged", (accounts) => {
+                console.log("accountsChanged", accounts); // 钱包锁定时为 []
+            });
+            tron.on("chainChanged", ({ chainId }) => {
+                console.log("chainChanged", chainId);
+            });
+            tron.on("connect", ({ chainId }) => {
+                console.log("connect", chainId);
+            });
         }
-        console.log("tronLink 检测成功！");
-
-        // 现代 API（window.tron.on）— 推荐使用
-        window.tron.on("accountsChanged", (accounts) => {
-            console.log("accountsChanged", accounts); // 钱包锁定时为 []
-        });
-        window.tron.on("chainChanged", ({ chainId }) => {
-            console.log("chainChanged", chainId);
-        });
-        window.tron.on("connect", ({ chainId }) => {
-            console.log("connect", chainId);
-        });
-        window.tron.on("disconnect", (err) => {
-            console.log("disconnect", err); // { code: 4900, message: 'Disconnected' }
-        });
-    }
-
-    if (window.tronLink) {
-        handleTronLink();
-    } else {
-        window.addEventListener("tronLink#initialized", handleTronLink, { once: true });
-        setTimeout(handleTronLink, 3000); // 兜底：防止事件已经错过
-    }
+    });
+    // 让已加载的钱包重新公告自己
+    window.dispatchEvent(new Event("TIP6963:requestProvider"));
 
     // 2. 原始 window.postMessage 事件 — 涵盖旧版 3.x 事件与授权流程
     window.addEventListener("message", function (e) {
@@ -91,38 +82,33 @@ TronLink 支持 TRON 主网及测试网（Shasta、Nile）。开发者可以在 
 
 ---
 
-### 初始化完成事件
+### 检测 TronLink（TIP-6963）
 
-事件标识：`tronLink#initialized`
+事件标识：`TIP6963:announceProvider`
 
 #### 简介
 
-当 TronLink 完成 `window.tronLink` 注入后，会在 `window` 上派发该事件。可用它在调用任何钱包方法前安全地等待对象就绪，避免轮询。
+TronLink 通过 TIP-6963 协议对外公告自己的 provider 对象。监听 `TIP6963:announceProvider` 并派发 `TIP6963:requestProvider`，即可安全地发现钱包，无需污染全局命名空间或轮询 `window.tron`。announce 事件返回的 provider 即为 `window.tron`。
+
+完整的 TIP-6963 规范请参考 [主动请求 TronLink 插件功能](./active-requests.md)。
 
 #### 技术规范
 
 ##### 代码示例
 
 ```javascript
-if (window.tronLink) {
-  handleTronLink();
-} else {
-  window.addEventListener('tronLink#initialized', handleTronLink, {
-    once: true,
-  });
-  // 兜底：防止事件已经错过
-  setTimeout(handleTronLink, 3000);
-}
-
-function handleTronLink() {
-  const { tronLink } = window;
-  if (tronLink) {
-    console.log('tronLink successfully detected!');
-  } else {
-    console.log('Please install TronLink-Extension!');
+let tron;
+window.addEventListener('TIP6963:announceProvider', (e) => {
+  if (e.detail.info && e.detail.info.name === 'TronLink') {
+    tron = e.detail.provider; // === window.tron
+    console.log('TronLink 检测成功！');
   }
-}
+});
+// 让已加载的钱包重新公告自己
+window.dispatchEvent(new Event('TIP6963:requestProvider'));
 ```
+
+如果派发请求后 `tron` 仍为 undefined，则说明用户未安装 TronLink，可提示用户进行安装。
 
 ### 账户改变消息
 
@@ -201,12 +187,9 @@ window.tron.on('chainChanged', ({chainId}) => {
 
 消息标识： `connect`
 #### 简介
-如果TronLink及`window.tron`对象可用，那么必定发出此事件。
-这包括以下情况：
+如果 TronLink 及 `window.tron` 对象可用，此事件会在 provider 初始化完成后被派发一次（包含 `disconnect` 之后重新连接的场景）。
 
- - provider在初始化完成后，连接到一个链。
-
- - `disconnect`事件发出后，provider连接到一个链。
+**时序注意**：该事件在插件 init 完成后约 100ms 派发。如果 DApp 的监听器在插件 init 之后才注册（例如页面加载较慢、通过 TIP-6963 `requestProvider` 才拿到 provider），则可能错过 `connect` 事件。此时直接把"provider 存在"视作已连接，并结合 `tron.tronWeb?.ready` 判断当前状态即可。
 
 #### 技术规范
 ##### 代码示例
@@ -220,12 +203,16 @@ window.tron.on('connect', ({chainId}) => {
 ### 断开连接网站消息
 消息标识： `disconnect`
 #### 简介
-如果provider与所有链断开连接，则provider必须发出`disconnect`事件，并返回`ProviderRpcError`对象的错误。
+TIP-1193 规范规定：当 provider 与所有链断开连接时，应派发 `disconnect` 事件并携带 `ProviderRpcError` 对象。
+
+**当前 TronLink 行为**：TronLink 目前 **不会** 在 provider 上派发 `disconnect`。当用户断开网站（或钱包被锁定）时，会通过 `accountsChanged` 派发空数组 `[]` 来表示——在 TronLink 实现 `disconnect` 之前，请以此作为断连信号。
+
 #### 技术规范
 ##### 代码示例
 ```typescript
-tron.on('disconnect', (providerRpcError: ProviderRpcError) => {
-  console.error(connectInfo); // { code: 4900, message: 'Disconnected' }
+// 规范保留事件——注册监听器无害，但当前不会被触发。
+tron.on('disconnect', (providerRpcError) => {
+  console.error(providerRpcError); // { code: 4900, message: 'Disconnected' }
 })
 ```
 

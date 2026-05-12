@@ -4,19 +4,19 @@ This document walks you through connecting a DApp to the TronLink wallet end-to-
 
 ## Overview
 
-TronLink is a browser extension wallet for the TRON network. By integrating TronLink, your DApp can communicate with the TRON network — TronLink injects a `window.tronLink` object into every page, exposing a `tronWeb` instance and a request method for talking to the wallet.
+TronLink is a browser extension wallet for the TRON network. By integrating TronLink, your DApp can communicate with the TRON network — TronLink injects a `window.tron` object into every page, exposing a `tronWeb` instance and a `request` method for talking to the wallet.
 
-## The `window.tronLink` Object
+## The `window.tron` Object
 
 ```typescript
-interface tronLinkParams {
-  ready: boolean;            // false until the user authorizes the DApp; true afterward
-  request: (args: any) => any; // Method used by the DApp to invoke wallet features
+interface TronProvider {
+  isTronLink: true;
+  request: (args: { method: string; params?: any }) => Promise<any>; // Method used by the DApp to invoke wallet features
   tronWeb: TronWeb;          // TronWeb instance bound to the user's current account/network
 }
 ```
 
-Once the user authorizes the connection, `window.tronLink.tronWeb` is fully usable for building, signing and broadcasting transactions.
+Once the user authorizes the connection, `window.tron.tronWeb` is fully usable for building, signing and broadcasting transactions.
 
 ## Detect TronLink (TIP-6963)
 
@@ -38,24 +38,23 @@ If `provider` is still undefined after dispatching the request, TronLink is not 
 
 ## Request Authorization
 
-Use `tron_requestAccounts` to ask the user to connect their wallet. The response indicates whether the user accepted, the request is queued, or the user rejected.
+Use `eth_requestAccounts` to ask the user to connect their wallet. On approval the promise resolves with an array containing the selected address; on failure it rejects with a `{ code, message }` error.
 
 ```typescript
-interface RequestAccountsResponse {
-  code: number;     // 200: ok, 4000: queued, 4001: rejected
-  message: string;
+try {
+  const accounts: string[] = await tron.request({ method: "eth_requestAccounts" });
+  console.log("Connected:", accounts[0]);
+} catch (err) {
+  // err shape: { code: number, message: string }
+  console.warn("Authorization failed:", err);
 }
-
-const res: RequestAccountsResponse = await tronLink.request({
-  method: "tron_requestAccounts",
-});
 ```
 
-| code | Description |
-| ---- | ----------- |
-| 200  | User accepted the authorization |
-| 4000 | Already queued — do not resubmit |
-| 4001 | User rejected the authorization |
+| code   | Description |
+| ------ | ----------- |
+| 4001   | User rejected the request (clicked Reject, closed the popup, or the request did not come from the active tab) |
+| -32000 | DApp requests are too frequent (rate-limited while the wallet is locked) |
+| 4200   | Unsupported method |
 
 For the full TIP-1102 specification, error codes and the legacy connection method, see [Proactively Request TronLink Plugin Features](../plugin-wallet/active-requests.md).
 
@@ -65,16 +64,11 @@ The simplest connection helper — reuses the existing connection if the user al
 
 ```javascript
 async function getTronWeb() {
-  let tronWeb;
-  if (window.tronLink.ready) {
-    tronWeb = tronLink.tronWeb;
-  } else {
-    const res = await tronLink.request({ method: "tron_requestAccounts" });
-    if (res.code === 200) {
-      tronWeb = tronLink.tronWeb;
-    }
+  if (window.tron.tronWeb?.ready) {
+    return window.tron.tronWeb;
   }
-  return tronWeb;
+  await window.tron.request({ method: "eth_requestAccounts" });
+  return window.tron.tronWeb;
 }
 ```
 
@@ -106,13 +100,10 @@ The following self-contained HTML example detects TronLink via TIP-6963, request
       async function connect() {
         if (!provider) return alert("TronLink not found!");
         try {
-          const res = await provider.request({
-            method: "tron_requestAccounts",
+          const accounts = await provider.request({
+            method: "eth_requestAccounts",
           });
-          if (res.code !== 200) {
-            console.warn("Authorization failed:", res);
-            return;
-          }
+          console.log("Connected:", accounts[0]);
 
           const tronweb = provider.tronWeb;
           const from = tronweb.defaultAddress.base58;
@@ -128,6 +119,7 @@ The following self-contained HTML example detects TronLink via TIP-6963, request
           const broadcastTx = await tronweb.trx.sendRawTransaction(signedTx);
           console.log(broadcastTx);
         } catch (error) {
+          // { code: 4001, message: "User rejected the request." } when the user declines
           console.error(error);
         }
       }

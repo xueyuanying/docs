@@ -4,19 +4,19 @@
 
 ## 概述
 
-TronLink 是一款面向 TRON 网络的浏览器扩展钱包。DApp 只要集成 TronLink，便能与 TRON 网络进行通信 — TronLink 会向每个页面注入 `window.tronLink` 对象，对外暴露一个 `tronWeb` 实例以及与钱包通信所需的 `request` 方法。
+TronLink 是一款面向 TRON 网络的浏览器扩展钱包。DApp 只要集成 TronLink，便能与 TRON 网络进行通信 — TronLink 会向每个页面注入 `window.tron` 对象，对外暴露一个 `tronWeb` 实例以及与钱包通信所需的 `request` 方法。
 
-## `window.tronLink` 对象
+## `window.tron` 对象
 
 ```typescript
-interface tronLinkParams {
-  ready: boolean;             // 用户授权前为 false，授权后为 true
-  request: (args: any) => any; // DApp 调用钱包能力的方法
+interface TronProvider {
+  isTronLink: true;
+  request: (args: { method: string; params?: any }) => Promise<any>; // DApp 调用钱包能力的方法
   tronWeb: TronWeb;           // 与当前账户/网络绑定的 TronWeb 实例
 }
 ```
 
-用户完成授权后，`window.tronLink.tronWeb` 即可用于构建、签名与广播交易。
+用户完成授权后，`window.tron.tronWeb` 即可用于构建、签名与广播交易。
 
 ## 检测 TronLink（TIP-6963）
 
@@ -38,24 +38,23 @@ window.dispatchEvent(new Event("TIP6963:requestProvider"));
 
 ## 请求授权
 
-通过 `tron_requestAccounts` 请求用户授权连接钱包，返回值会指明用户是否同意、请求是否在排队、或被拒绝。
+通过 `eth_requestAccounts` 请求用户授权连接钱包。用户同意时 Promise resolve 为一个仅含当前选中地址的数组；失败时 Promise reject，错误对象形如 `{ code, message }`。
 
 ```typescript
-interface RequestAccountsResponse {
-  code: number;     // 200: 同意，4000: 已在队列中，4001: 用户拒绝
-  message: string;
+try {
+  const accounts: string[] = await tron.request({ method: "eth_requestAccounts" });
+  console.log("已连接：", accounts[0]);
+} catch (err) {
+  // err 结构：{ code: number, message: string }
+  console.warn("授权失败：", err);
 }
-
-const res: RequestAccountsResponse = await tronLink.request({
-  method: "tron_requestAccounts",
-});
 ```
 
-| code | 说明 |
-| ---- | ---- |
-| 200  | 用户同意授权 |
-| 4000 | 已在队列中，请勿重复提交 |
-| 4001 | 用户拒绝授权 |
+| code   | 说明 |
+| ------ | ---- |
+| 4001   | 用户拒绝请求（点击拒绝、关闭弹窗，或请求不是来自当前活跃 tab） |
+| -32000 | 钱包锁定状态下，同一来源在 20 秒内重复发起请求 |
+| 4200   | 不支持的方法 |
 
 完整 TIP-1102 规范、错误码及旧版连接方式请参考 [主动请求 TronLink 插件功能](../plugin-wallet/active-requests.md)。
 
@@ -65,16 +64,11 @@ const res: RequestAccountsResponse = await tronLink.request({
 
 ```javascript
 async function getTronWeb() {
-  let tronWeb;
-  if (window.tronLink.ready) {
-    tronWeb = tronLink.tronWeb;
-  } else {
-    const res = await tronLink.request({ method: "tron_requestAccounts" });
-    if (res.code === 200) {
-      tronWeb = tronLink.tronWeb;
-    }
+  if (window.tron.tronWeb?.ready) {
+    return window.tron.tronWeb;
   }
-  return tronWeb;
+  await window.tron.request({ method: "eth_requestAccounts" });
+  return window.tron.tronWeb;
 }
 ```
 
@@ -106,13 +100,10 @@ async function getTronWeb() {
       async function connect() {
         if (!provider) return alert("未检测到 TronLink！");
         try {
-          const res = await provider.request({
-            method: "tron_requestAccounts",
+          const accounts = await provider.request({
+            method: "eth_requestAccounts",
           });
-          if (res.code !== 200) {
-            console.warn("授权失败：", res);
-            return;
-          }
+          console.log("已连接：", accounts[0]);
 
           const tronweb = provider.tronWeb;
           const from = tronweb.defaultAddress.base58;
@@ -128,6 +119,7 @@ async function getTronWeb() {
           const broadcastTx = await tronweb.trx.sendRawTransaction(signedTx);
           console.log(broadcastTx);
         } catch (error) {
+          // 用户拒绝时为 { code: 4001, message: "User rejected the request." }
           console.error(error);
         }
       }
