@@ -1,6 +1,6 @@
 # 被动接收TronLink插件的消息
 
-TronLink 目前支持侧链与主链。开发者可以在 DApp 中监听 TronLink 派发的事件消息，以判断当前选择的是侧链还是主链，以及当前选择的账户。下面通过一个简单示例进行演示。
+TronLink 支持 TRON 主网及测试网（Shasta、Nile）。开发者可以在 DApp 中监听 TronLink 派发的事件消息，以判断当前选择的网络以及当前激活的账户。下面通过一个简单示例进行演示。
 
 ```html
 <!DOCTYPE html>
@@ -130,7 +130,7 @@ function handleTronLink() {
 #### 简介
 以下情况会产生此消息
 
-  1. 用户登陆
+  1. 用户登录
 
   2. 用户切换账号
 
@@ -151,7 +151,7 @@ window.tron.on('accountsChanged', (accountArray) => {
 ['your_current_account_address']
 ```
 ###### 返回值示例
-1. 用户登陆时，消息体内容为
+1. 用户登录时，消息体内容为
 ```json
 ['TZ5XixnRyraxJJy996Q1sip85PHWuj4793'] // 当前的账号
 ```
@@ -267,7 +267,7 @@ window.addEventListener('message', function (e) {
 
 以下情况会产生此消息
 
-1. 用户主动断接网站
+1. 用户主动断开连接
 
 ![image](../images/zh_plugin-wallet_disconnectWeb.png)
 
@@ -307,7 +307,7 @@ window.addEventListener('message', function (e) {
 
 以下情况会产生此消息
 
-1. 用户确定连接消息
+1. 用户主动连接网站时
 
 
 ![image](../images/zh_plugin-wallet_connectWeb.png)

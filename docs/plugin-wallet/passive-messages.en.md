@@ -1,6 +1,6 @@
 # Passively Receiving Messages from the TronLink Plugin
 
-TronLink currently supports sidechains and mainchains. Developers can detect the event message sent by TronLink in DApp to analyze whether is the sidechain or mainchain currently selected by TronLink, and which account is currently selected. Let's learn it with a simple example.
+TronLink supports the TRON mainnet and testnets (Shasta, Nile). Developers can listen for the event messages dispatched by TronLink in their DApp to detect the currently selected network and the currently active account. Let's learn it with a simple example.
 
 ```html
 <!DOCTYPE html>
