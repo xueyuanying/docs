@@ -266,8 +266,6 @@ Uncaught (in promise) Invalid transaction provided
 #### 简介
 dapp提供按钮给用户， 直接将指定的Token添加到用户插件的资产展示列表中
 
-> **注意：** 目前仅支持添加**主网**和 **Nile 测试网**的资产，不支持 Shasta 测试网。
-
 
 #### 技术规范
 ##### 代码示例
