@@ -54,15 +54,15 @@ try {
 
 | code   | 说明 |
 | ------ | ---- |
-| 4001   | 用户拒绝请求 —— 点击**拒绝**、关闭弹窗，或请求不是来自当前活跃 tab |
-| -32000 | 钱包锁定状态下，同一来源 20 秒内重复发起 `eth_requestAccounts`（频控） |
+| 4001   | 用户拒绝请求 —— 点击**拒绝**、关闭弹窗，或请求不是来自当前活跃标签页 |
+| -32000 | 钱包处于锁定状态时，同一来源 20 秒内重复发起 `eth_requestAccounts`（频控） |
 | 4200   | 不支持的方法 |
 
 完整的 TIP-1102（`eth_requestAccounts`）规范请参考 [主动请求 TronLink 插件功能](../plugin-wallet/active-requests.md)；旧版 `tron_requestAccounts` 连接方式也在同一页内。
 
 ## 获取 `tronWeb` 实例
 
-简化版连接逻辑 — 如果用户已授权过当前 DApp，直接复用现有连接，否则发起授权请求。
+简化版 helper —— 如果用户已授权过当前 DApp，直接复用已有的 `tronWeb` 实例，否则发起授权请求。
 
 ```javascript
 async function getTronWeb() {

@@ -22,7 +22,7 @@ Once the user authorizes the connection, `window.tron.tronWeb` is fully usable f
 
 ## Detect TronLink (TIP-6963)
 
-TIP-6963 is the recommended way to detect TronLink (and other TRON wallets) without polluting the global namespace. Listen for `TIP6963:announceProvider` events and dispatch a `TIP6963:requestProvider` to ask installed wallets to announce themselves.
+TIP-6963 is the recommended way to detect TronLink (and other TRON wallets) without polluting the global namespace. Listen for the `TIP6963:announceProvider` event and dispatch a `TIP6963:requestProvider` to ask installed wallets to announce themselves.
 
 ```javascript
 let tronProvider;
@@ -54,7 +54,7 @@ try {
 
 | code   | Description |
 | ------ | ----------- |
-| 4001   | User rejected the request — clicked **Reject**, closed the popup, or the request was not from the active tab |
+| 4001   | User rejected the request — clicked **Reject**, closed the popup, or the request did not come from the active tab |
 | -32000 | Same origin issued another `eth_requestAccounts` within 20 seconds while the wallet was locked (rate-limited) |
 | 4200   | Unsupported method |
 
@@ -62,7 +62,7 @@ For the full TIP-1102 (`eth_requestAccounts`) specification, see [Proactively Re
 
 ## Get the `tronWeb` Instance
 
-The simplest connection helper — reuses the existing connection if the user already authorized this DApp, otherwise requests authorization first.
+The simplest helper — returns the existing `tronWeb` if the user has already authorized this DApp, otherwise requests authorization first.
 
 ```javascript
 async function getTronWeb() {
@@ -75,13 +75,13 @@ async function getTronWeb() {
 }
 ```
 
-`tronProvider.tronWeb` is normally usable as soon as `eth_requestAccounts` resolves. For everything that happens *after* the initial connection — the user switching accounts, locking the wallet, or changing networks — listen for `accountsChanged` / `chainChanged` on the provider. See [Receive Messages from TronLink](../plugin-wallet/passive-messages.md) for the full event set.
+`tronProvider.tronWeb` is normally usable as soon as `eth_requestAccounts` resolves. For everything that happens *after* the initial authorization — the user switching accounts, locking the wallet, or changing networks — listen for `accountsChanged` / `chainChanged` on the provider. See [Receive Messages from TronLink](../plugin-wallet/passive-messages.md) for the full event set.
 
 After obtaining the `tronWeb` instance you can perform on-chain interactions: TRX/TRC20 transfers, multi-signature transactions, message signing, contract calls, and so on. For full `tronWeb` API usage, see the [TronWeb documentation](https://tronweb.network/docu/docs/intro).
 
 ## End-to-End Example: Sign and Broadcast a TRX Transfer
 
-The following self-contained HTML example detects TronLink via TIP-6963, requests authorization, builds a TRX transfer, prompts the user to sign in the TronLink popup, and broadcasts the signed transaction.
+The following self-contained HTML example detects TronLink via TIP-6963, requests authorization, builds a TRX transfer, prompts the user to confirm and sign via the TronLink popup, and broadcasts the signed transaction.
 
 ```html
 <!DOCTYPE html>
