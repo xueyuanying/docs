@@ -43,7 +43,7 @@
         const { action, data } = e.data.message;
 
         switch (action) {
-            // --- Modern authorization flow ---
+            // --- Legacy authorization events (3.x compat, deprecated in future versions) ---
             case &quot;connectWeb&quot;:
                 console.log(&quot;connectWeb&quot;, data);
                 break;
