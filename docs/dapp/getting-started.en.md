@@ -142,4 +142,3 @@ The following self-contained HTML example detects TronLink via TIP-6963, request
 - [Receive Messages from TronLink](../plugin-wallet/passive-messages.md) — account / network change events
 - [General Transfer](transfer.md), [Multi-Signature Transfer](multi-sign-transfer.md), [Message Signature](message-signing.md), [Stake 2.0](stake2.md)
 - [TronWeb Documentation](https://tronweb.network/docu/docs/intro)
-- Reference: [https://developers.tron.network/docs/introduction](https://developers.tron.network/docs/introduction)

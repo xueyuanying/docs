@@ -142,4 +142,3 @@ async function getTronWeb() {
 - [被动接收 TronLink 插件的消息](../plugin-wallet/passive-messages.md) — 账户 / 网络变化事件
 - [普通转账](transfer.md)、[多签转账](multi-sign-transfer.md)、[消息签名](message-signing.md)、[Stake 2.0](stake2.md)
 - [TronWeb 文档](https://tronweb.network/docu/docs/intro)
-- 参考：[https://developers.tron.network/docs/introduction](https://developers.tron.network/docs/introduction)
