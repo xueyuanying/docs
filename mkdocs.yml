@@ -75,9 +75,9 @@ plugins:
               - TronLink Cli : ai-support/tronlink-cli.en.md
             - DApp:
               - Start Developing: dapp/getting-started.en.md
-              - Multi-Signature Transfer: dapp/multi-sign-transfer.en.md
               - Message Signature: dapp/message-signing.en.md
               - General Transfer: dapp/transfer.en.md
+              - Multi-Signature Transfer: dapp/multi-sign-transfer.en.md
               - Stake2.0: dapp/stake2.en.md
         - locale: zh
           name: 中文
@@ -103,9 +103,9 @@ plugins:
               - TronLink Cli : ai-support/tronlink-cli.zh.md
             - DApp:
               - 开始开发: dapp/getting-started.zh.md
-              - 多签转账: dapp/multi-sign-transfer.zh.md
               - 消息签名: dapp/message-signing.zh.md
               - 普通转账: dapp/transfer.zh.md
+              - 多签转账: dapp/multi-sign-transfer.zh.md
               - Stake2.0: dapp/stake2.zh.md
       use_directory_urls: true  # 推荐保持为 true     
       suffix_mode: true 

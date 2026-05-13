@@ -38,7 +38,7 @@ try {
 
 When “await tronweb.trx.sign(tx);” is executed, a pop-up window will show in the TronLink wallet asking the user to confirm, as shown below: 
 
-![image](../images/dapp_general-transfer_img_0.jpg)
+![image](../images/plugin-wallet_sign_trx.jpg)
 
 If the user chooses on “Reject” in the pop-up window, an exception will be thrown, which the developer can catch for further processing.
 

@@ -35,7 +35,7 @@ try {
 
 当代码执行到`await tronweb.trx.sign(tx);`时，TronLink钱包会提示弹窗，需要用户进行确认，如下图：
 
-![image](../images/zh_dapp_pu-tong-zhuan-zhang_img_0.jpg)
+![image](../images/zh_plugin-wallet_sign_trx.png)
 
 如果用户在弹窗中选择【拒绝】，则会抛出异常，开发者可捕获此异常进行业务处理。
 
