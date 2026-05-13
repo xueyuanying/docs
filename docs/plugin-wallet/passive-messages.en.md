@@ -165,6 +165,8 @@ window.tron.on('accountsChanged', (accountArray) => {
 []
 ```
 
+> **Legacy (not recommended):** [setAccount (3.x)](#account-switch-setaccount)
+
 
 ### Network Change Message
 
@@ -205,6 +207,8 @@ Currently supported `chainId` values:
 
 **Note:** Chain IDs are case-sensitive.
 
+> **Legacy (not recommended):** [setNode (3.x)](#network-switch-setnode) or [tabReply (3.x)](#network-initialization-tabreply)
+
 ### TronLink Service Availability Message
 
 Message identifier: `connect`
@@ -225,6 +229,8 @@ window.tron.on('connect', ({chainId}) => {
   console.log('got connect event', chainId)
 })
 ```
+
+> **Legacy (not recommended):** [connectWeb (postMessage)](#user-proactively-connected-website-message) or [acceptWeb (postMessage)](#user-confirmed-connection-message)
 
 
 ### Website Disconnect Message
@@ -247,6 +253,8 @@ window.tron.on('disconnect', (providerRpcError) => {
   console.error(providerRpcError); // { code: 4900, message: 'Disconnected' }
 })
 ```
+
+> **Legacy (not recommended):** [disconnectWeb (postMessage)](#user-disconnected-website-message) or [rejectWeb (postMessage)](#user-rejected-connection-message)
 
 ---
 

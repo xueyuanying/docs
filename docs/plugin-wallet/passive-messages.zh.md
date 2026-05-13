@@ -152,6 +152,8 @@ window.tron.on('accountsChanged', (accountArray) => {
 []
 ```
 
+> **旧版用法（不推荐）：** [setAccount（3.x）](#setaccount)
+
 
 ### 网络改变消息
 
@@ -183,6 +185,8 @@ window.tron.on('chainChanged', ({chainId}) => {
   - nile(nile测试网): `0xcd8690dc`
 - chainId的值大小写敏感。
 
+> **旧版用法（不推荐）：** [setNode（3.x）](#setnode) 或 [tabReply（3.x）](#tabreply)
+
 ### TronLink可以提供服务的消息
 
 消息标识： `connect`
@@ -200,6 +204,8 @@ window.tron.on('connect', ({chainId}) => {
 })
 ```
 
+> **旧版用法（不推荐）：** [connectWeb（postMessage）](#connectweb) 或 [acceptWeb（postMessage）](#acceptweb)
+
 ### 断开连接网站消息
 消息标识： `disconnect`
 #### 简介
@@ -216,6 +222,8 @@ window.tron.on('disconnect', (providerRpcError) => {
 })
 ```
 
+> **旧版用法（不推荐）：** [disconnectWeb（postMessage）](#disconnectweb) 或 [rejectWeb（postMessage）](#rejectweb)
+
 ### 历史遗留问题
 
 以下消息通过 `window.postMessage` 派发，DApp 接收到的内容是一个 `MessageEvent`，事件结构可参考 [MessageEvent 的 MDN 文档](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent)。
@@ -230,7 +238,7 @@ window.tron.on('disconnect', (providerRpcError) => {
 
 4. 用户主动连接网站消息`connectWeb`
 
-#### 用户拒绝连接消息
+#### 用户拒绝连接消息 rejectWeb
 消息标识： `rejectWeb`
 
 以下情况会产生此消息
@@ -250,7 +258,7 @@ window.addEventListener('message', function (e) {
 })
 ```
 
-#### 用户断连网站消息
+#### 用户断连网站消息 disconnectWeb
 消息标识： `disconnectWeb`
 
 以下情况会产生此消息
@@ -270,7 +278,7 @@ window.addEventListener('message', function (e) {
 })
 ```
 
-#### 用户确定连接消息
+#### 用户确定连接消息 acceptWeb
 消息标识： `acceptWeb`
 
 以下情况会产生此消息
@@ -290,7 +298,7 @@ window.addEventListener('message', function (e) {
 })
 ```
 
-#### 用户主动连接网站消息
+#### 用户主动连接网站消息 connectWeb
 消息标识： `connectWeb`
 
 以下情况会产生此消息

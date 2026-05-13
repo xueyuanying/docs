@@ -14,7 +14,7 @@ This method follows the Ethereum **EIP-1102** protocol.
 
 ```javascript
 try {
-  await tron.request({method: 'eth_requestAccounts'});
+  await window.tron.request({method: 'eth_requestAccounts'});
 } catch (e) {}
 ```
 
@@ -45,66 +45,8 @@ After unlocking, or if already unlocked, a connection confirmation popup appears
 
 ![image](../images/plugin-wallet_request-accounts.jpg)
 
+> **Legacy (not recommended):** [Legacy: tron_requestAccounts](#legacy-tron_requestaccounts)
 
-
-### Connect Website (Legacy)
-
-This connection method is **deprecated**.  
-For future website connection methods, refer to **Connect Website TIP-1102**.
-
-#### Overview
-
-TronLink provides external TRX transfer, contract signing, authorization, and other functions.  
-For security reasons, users must first authorize the requesting DApp via **Connect Website** before critical operations are allowed.
-
-Therefore, the DApp must perform the **Connect Website** request first and wait for user approval before initiating operations requiring authorization.
-
-#### Technical Specification
-
-##### Code Example
-
-```typescript
-const res = await tronWeb.request(
-  {
-    method: 'tron_requestAccounts',
-    params: {
-      websiteIcon: '<WEBSITE ICON URI>',
-      websiteName: '<WEBSITE NAME>',
-    } as RequestAccountParams,
-  }
-);
-```
-
-##### Parameters
-
-```typescript
-interface RequestAccountsParams {
-  websiteIcon?: string;
-  websiteName?: string;
-}
-```
-
-- **method:** fixed string `tron_requestAccounts`
-- **params:** `RequestAccountParams` type:
-  - `websiteIcon`: DApp website icon URI (displayed in connected site list)
-  - `websiteName`: DApp website name
-
-##### Return Value
-
-```typescript
-interface ReqestAccountsResponse {
-  code: 200 | 4000 | 4001,
-  message: string
-}
-```
-
-| Return Code | Description | Message |
-| - | - | - |
-| None | Wallet locked | Empty string |
-| 200 | Site already authorized | The site is already in the whitelist |
-| 200 | User approved connection | User allowed the request. |
-| 4000 | Duplicate authorization request pending | Authorization requests are being processed, please do not resubmit |
-| 4001 | User rejected connection | User rejected the request |
 
 ### Get TronLink Provider via TIP-6963
 
@@ -170,22 +112,21 @@ window.addEventListener(
 // Wallets' code that had run earlier
 window.dispatchEvent(new Event("TIP6963:requestProvider"));
 ```
-After implementing the above code, the DApp can precisely obtain the provider supplied by TronLink.TronLink’s rdns is `org.tronlink.www`, and its name is `TronLink`.
+After implementing the above code, the DApp can precisely obtain the provider supplied by TronLink. TronLink’s rdns is `org.tronlink.www`, and its name is `TronLink`.
 
 ### Normal Transfer
+
+> **Prerequisite:** The DApp connection has been authorized via `eth_requestAccounts` (see [Connect Website TIP-1102](#connect-website-tip-1102) above).
 
 #### Overview
 
 A DApp needs the user to initiate a TRX transfer.
 
-**Prerequisite:**  
-The developer must complete the **Connect Website** request and the user must approve it.
-
 A transfer on the TRON network requires three steps:
 
-1. Construct the transaction  
-2. Sign the transaction  
-3. Broadcast the signed transaction  
+1. Construct the transaction
+2. Sign the transaction
+3. Broadcast the signed transaction
 
 TronLink handles **step 2 (signing)**, while steps 1 and 3 must be completed using TronWeb.
 
@@ -194,29 +135,30 @@ TronLink handles **step 2 (signing)**, while steps 1 and 3 must be completed usi
 ##### Code Example
 
 ```typescript
-if (window.tronLink.ready) {
-  const tronweb = tronLink.tronWeb;
-  const fromAddress = tronweb.defaultAddress.base58;
-  const toAddress = "TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K";
-  const tx = await tronweb.transactionBuilder.sendTrx(toAddress, 10, fromAddress);
+const tronweb = window.tron.tronWeb;
+const fromAddress = tronweb.defaultAddress.base58;
+const toAddress = "TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K";
+const tx = await tronweb.transactionBuilder.sendTrx(toAddress, 10, fromAddress);
 
-  try {
-    const signedTx = await tronweb.trx.sign(tx);
-    await tronweb.trx.sendRawTransaction(signedTx);
-  } catch (e) {}
-}
+try {
+  const signedTx = await tronweb.trx.sign(tx);
+  await tronweb.trx.sendRawTransaction(signedTx);
+} catch (e) {}
 ```
 
-When executing `await tronweb.trx.sign(tx);`, TronLink displays a confirmation popup. 
+When executing `await tronweb.trx.sign(tx);`, TronLink displays a confirmation popup.
 
 ![image](../images/plugin-wallet_sign_trx.jpg)
 
-Reject → exception thrown.  
+Reject → exception thrown.
 Sign → signed transaction returned for broadcasting.
 
+> **Legacy (not recommended):** [Legacy: sendTrx via window.tronLink](#legacy-sendtrx-via-windowtronlink)
 
 
 ### Multi-Signature Transfer
+
+> **Prerequisite:** The DApp connection has been authorized via `eth_requestAccounts` (see [Connect Website TIP-1102](#connect-website-tip-1102) above).
 
 #### Overview
 
@@ -227,56 +169,51 @@ Refer to **Normal Transfer** above.
 ##### Code Example
 
 ```typescript
-if (window.tronLink.ready) {
-  const tronweb = tronLink.tronWeb;
-  const toAddress = "TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K";
-  const activePermissionId = 2;
+const tronweb = window.tron.tronWeb;
+const toAddress = "TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K";
+const activePermissionId = 2;
 
-  const tx = await tronweb.transactionBuilder.sendTrx(
-      toAddress, 10,
-      { permissionId: activePermissionId}
-  );
+const tx = await tronweb.transactionBuilder.sendTrx(
+    toAddress, 10,
+    { permissionId: activePermissionId}
+);
 
-  try {
-    const signedTx = await tronweb.trx.multiSign(tx, undefined, activePermissionId);
-    await tronweb.trx.sendRawTransaction(signedTx);
-  } catch (e) {}
-}
+try {
+  const signedTx = await tronweb.trx.multiSign(tx, undefined, activePermissionId);
+  await tronweb.trx.sendRawTransaction(signedTx);
+} catch (e) {}
 ```
 
 Rejecting triggers an exception; signing returns the signed transaction for broadcasting.
 
+> **Legacy (not recommended):** [Legacy: multiSign via window.tronLink](#legacy-multisign-via-windowtronlink)
 
 
 ### Message Signing
 
+> **Prerequisite:** The DApp connection has been authorized via `eth_requestAccounts` (see [Connect Website TIP-1102](#connect-website-tip-1102) above).
+
 #### Overview
 
-A DApp may require users to sign a hex message.  
+A DApp may require users to sign a hex message.
 The signed message is then sent to the backend for verification to authenticate user login.
-
-#### Prerequisite
-
-The developer must complete **Connect Website** authorization.
 
 #### Technical Specification
 
 ##### Code Example
 
 ```typescript
-if (window.tronLink.ready) {
-  const tronweb = tronLink.tronWeb;
+const tronweb = window.tron.tronWeb;
 
-  try {
-    const message = "0x01EF";
-    const signedString = await tronweb.trx.signMessageV2(message);
-  } catch (e) {}
-}
+try {
+  const message = "0x01EF";
+  const signedString = await tronweb.trx.signMessageV2(message);
+} catch (e) {}
 ```
 
 ##### Parameter
 
-`tronLink.tronweb.trx.signMessageV2` accepts a hexadecimal string representing the message to sign.
+`window.tron.tronWeb.trx.signMessageV2` accepts a hexadecimal string representing the message to sign.
 
 ##### Return Value
 
@@ -294,16 +231,19 @@ Uncaught (in promise) Invalid transaction provided
 
 #### Interaction Flow
 
-When executing signing, TronLink shows a confirmation popup with the hex message.  
+When executing signing, TronLink shows a confirmation popup with the hex message.
 
 ![image](../images/plugin-wallet_sign_message.jpg)
 
-Reject → exception.  
+Reject → exception.
 Sign → signed message returned.
 
+> **Legacy (not recommended):** [Legacy: signMessageV2 via window.tronLink](#legacy-signmessagev2-via-windowtronlink)
 
 
 ### Add Asset
+
+> **Prerequisite:** The DApp connection has been authorized via `eth_requestAccounts` (see [Connect Website TIP-1102](#connect-website-tip-1102) above).
 
 #### Overview
 
@@ -314,17 +254,15 @@ A DApp can provide a button allowing users to directly add a token to their Tron
 ##### Code Example
 
 ```typescript
-const res = await tronWeb.request(
-  {
-    method: 'wallet_watchAsset',
-    params: {
-      type: 'TRC20',
-      options: {
-          address: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
-      }
-    },
-  }
-);
+const res = await window.tron.request({
+  method: 'wallet_watchAsset',
+  params: {
+    type: 'trc20',
+    options: {
+        address: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
+    }
+  },
+});
 ```
 
 ##### Parameters
@@ -354,7 +292,7 @@ No return value.
 ##### Add TRC10
 
 ```typescript
-tronweb.request({
+await window.tron.request({
   method: 'wallet_watchAsset',
   params: {
     type: 'trc10',
@@ -373,7 +311,7 @@ Click the “Add” button and the asset will be added to the asset list, as sho
 ##### Add TRC20
 
 ```typescript
-tronweb.request({
+await window.tron.request({
   method: 'wallet_watchAsset',
   params: {
     type: 'trc20',
@@ -393,7 +331,7 @@ Click the “Add” button and the asset will be added to the asset list, as sho
 ##### Add TRC721
 
 ```typescript
-tronweb.request({
+await window.tron.request({
   method: 'wallet_watchAsset',
   params: {
     type: 'trc721',
@@ -410,15 +348,14 @@ Click the “Add” button and the asset will be added to the asset list, as sho
 
 ![image](../images/plugin-wallet_add_trc721_success.jpg)
 
+> **Legacy (not recommended):** [Legacy: wallet_watchAsset via window.tronLink](#legacy-wallet_watchasset-via-windowtronlink)
 
 
 ### Switch Network TIP-3326
 
-`Switch Network` is **not supported in 4.0-beta1**, supported starting **4.0-beta2**.
-
 #### Overview
 
-Most DApps operate on specific chains.  
+Most DApps operate on specific chains.
 This protocol allows a DApp to request TronLink to switch chains, with user confirmation.
 
 After approval, the DApp can operate normally on that chain.
@@ -431,7 +368,7 @@ This protocol follows **EIP-3326**.
 
 ```javascript
 try {
-  await tronLink.request({
+  await window.tron.request({
     method: 'wallet_switchEthereumChain',
     params: [{chainId: '0x2b6653dc'}]
   });
@@ -474,3 +411,179 @@ Triggering the request shows an unlock popup if TronLink is locked, then a netwo
 ![image](../images/plugin-wallet_lock-page.jpg)
 
 ![image](../images/plugin-wallet_switch-chain.jpg)
+
+> **Legacy (not recommended):** [Legacy: wallet_switchEthereumChain via tronLink.request](#legacy-wallet_switchethereumchain-via-tronlinkrequest)
+
+
+---
+
+## Legacy Usage (Not Recommended)
+
+The following interfaces are retained as compatibility aliases. New integrations should use the recommended usage above. `window.tronLink` and `window.tron` are functionally equivalent, but the former is being phased out and is no longer actively maintained.
+
+### Legacy: tron_requestAccounts
+
+#### Overview
+
+TronLink provides external TRX transfer, contract signing, authorization, and other functions.
+For security reasons, users must first authorize the requesting DApp via **Connect Website** before critical operations are allowed.
+
+Therefore, the DApp must perform the **Connect Website** request first and wait for user approval before initiating operations requiring authorization.
+
+#### Technical Specification
+
+##### Code Example
+
+```typescript
+const res = await tronWeb.request(
+  {
+    method: 'tron_requestAccounts',
+    params: {
+      websiteIcon: '<WEBSITE ICON URI>',
+      websiteName: '<WEBSITE NAME>',
+    } as RequestAccountParams,
+  }
+);
+```
+
+##### Parameters
+
+```typescript
+interface RequestAccountsParams {
+  websiteIcon?: string;
+  websiteName?: string;
+}
+```
+
+- **method:** fixed string `tron_requestAccounts`
+- **params:** `RequestAccountParams` type:
+  - `websiteIcon`: DApp website icon URI (displayed in connected site list)
+  - `websiteName`: DApp website name
+
+##### Return Value
+
+```typescript
+interface ReqestAccountsResponse {
+  code: 200 | 4000 | 4001,
+  message: string
+}
+```
+
+| Return Code | Description | Message |
+| - | - | - |
+| None | Wallet locked | Empty string |
+| 200 | Site already authorized | The site is already in the whitelist |
+| 200 | User approved connection | User allowed the request. |
+| 4000 | Duplicate authorization request pending | Authorization requests are being processed, please do not resubmit |
+| 4001 | User rejected connection | User rejected the request |
+
+
+### Legacy: sendTrx via window.tronLink
+
+```typescript
+if (window.tronLink.ready) {
+  const tronweb = tronLink.tronWeb;
+  const fromAddress = tronweb.defaultAddress.base58;
+  const toAddress = "TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K";
+  const tx = await tronweb.transactionBuilder.sendTrx(toAddress, 10, fromAddress);
+
+  try {
+    const signedTx = await tronweb.trx.sign(tx);
+    await tronweb.trx.sendRawTransaction(signedTx);
+  } catch (e) {}
+}
+```
+
+
+### Legacy: multiSign via window.tronLink
+
+```typescript
+if (window.tronLink.ready) {
+  const tronweb = tronLink.tronWeb;
+  const toAddress = "TDvSsdrNM5eeXNL3czpa6AxLDHZA9nwe9K";
+  const activePermissionId = 2;
+
+  const tx = await tronweb.transactionBuilder.sendTrx(
+      toAddress, 10,
+      { permissionId: activePermissionId}
+  );
+
+  try {
+    const signedTx = await tronweb.trx.multiSign(tx, undefined, activePermissionId);
+    await tronweb.trx.sendRawTransaction(signedTx);
+  } catch (e) {}
+}
+```
+
+
+### Legacy: signMessageV2 via window.tronLink
+
+```typescript
+if (window.tronLink.ready) {
+  const tronweb = tronLink.tronWeb;
+
+  try {
+    const message = "0x01EF";
+    const signedString = await tronweb.trx.signMessageV2(message);
+  } catch (e) {}
+}
+```
+
+
+### Legacy: wallet_watchAsset via window.tronLink
+
+```typescript
+// Add TRC10
+if (window.tronLink.ready) {
+  const tronweb = tronLink.tronWeb;
+  try {
+    tronweb.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'trc10',
+        options: { address: '1002000' },
+      },
+    });
+  } catch (e) {}
+}
+
+// Add TRC20
+if (window.tronLink.ready) {
+  const tronweb = tronLink.tronWeb;
+  try {
+    tronweb.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'trc20',
+        options: { address: 'TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9' },
+      },
+    });
+  } catch (e) {}
+}
+
+// Add TRC721
+if (window.tronLink.ready) {
+  const tronweb = tronLink.tronWeb;
+  try {
+    tronweb.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'trc721',
+        options: { address: 'TVtaUnsgKXhTfqSFRnHCsSXzPiXmm53nZt' },
+      },
+    });
+  } catch (e) {}
+}
+```
+
+
+### Legacy: wallet_switchEthereumChain via tronLink.request
+
+```javascript
+try {
+  await tronLink.request({
+    method: 'wallet_switchEthereumChain',
+    params: [{chainId: '0x2b6653dc'}]
+  });
+} catch (e) {}
+```
