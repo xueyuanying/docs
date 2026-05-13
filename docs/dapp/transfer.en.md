@@ -4,9 +4,7 @@
 
 DApp requires users to initiate a TRX transfer.
 
-**Prerequisite**
-
-The DApp developer completes the request to connect to the website, and the user approves to the connection. The DApp sends a request asking the user to connect the wallet to the website, and the user approves to the connection.
+> **Prerequisite:** The DApp connection has been authorized via `eth_requestAccounts` (see [Start Developing](getting-started.md#request-authorization)).
 
 It takes 3 steps to initiate a transfer on the TRON network:
 
@@ -25,20 +23,17 @@ In this process, Step 2 requires TronLink while both Step 1 and 3 happen on tron
 
 **Example**
 
-```shell  
-    
-    if (window.tronLink.ready) {
-      const tronweb = tronLink.tronWeb;
-      const fromAddress = tronweb.defaultAddress.base58;
-      const toAddress = "TAHQdDiZajMMP26STUnfsiRMNyXdxAJakZ";
-      const tx = await tronweb.transactionBuilder.sendTrx(toAddress, 10, fromAddress); // Step1
-      try {
-        const signedTx = await tronweb.trx.sign(tx); // Step2
-        await tronweb.trx.sendRawTransaction(signedTx); // Step3
-      } catch (e) {
-        // error handling
-      }
-    }
+```javascript
+const tronweb = window.tron.tronWeb;
+const fromAddress = tronweb.defaultAddress.base58;
+const toAddress = "TAHQdDiZajMMP26STUnfsiRMNyXdxAJakZ";
+const tx = await tronweb.transactionBuilder.sendTrx(toAddress, 10, fromAddress); // Step 1
+try {
+  const signedTx = await tronweb.trx.sign(tx); // Step 2
+  await tronweb.trx.sendRawTransaction(signedTx); // Step 3
+} catch (e) {
+  // error handling
+}
 ```
 
 When “await tronweb.trx.sign(tx);” is executed, a pop-up window will show in the TronLink wallet asking the user to confirm, as shown below: 

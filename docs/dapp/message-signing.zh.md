@@ -4,28 +4,23 @@
 
 DApp 需要用户对一个 hex 消息签名，签名后消息转发给后端进行验签，以此判断用户合法登录。
 
-**前提**
-
-DApp 开发者完成【连接网站】请求，用户同意连接。
+> **前提条件：** 已通过 `eth_requestAccounts` 完成 DApp 连接授权（参见[开始开发](getting-started.md)）。
 
 **技术规范**
 
 **代码示例**
 
-```shell
-
-    if (window.tronLink.ready) {
-      const tronweb = tronLink.tronWeb;
-      try {
-        const message = "0x01EF"; // any hex string
-        const signedString = await tronweb.trx.signMessageV2(message);
-      } catch (e) {}
-    }
+```javascript
+const tronweb = window.tron.tronWeb;
+try {
+  const message = "0x01EF"; // any hex string
+  const signedString = await tronweb.trx.signMessageV2(message);
+} catch (e) {}
 ```
 
 **参数**
 
-`tronLink.tronWeb.trx.signMessageV2`接收一个十六进制的字符串作为参数，该字符串表示当前待签名的内容。
+`window.tron.tronWeb.trx.signMessageV2` 接收一个十六进制的字符串作为参数，该字符串表示当前待签名的内容。
 
 **返回值**
 
